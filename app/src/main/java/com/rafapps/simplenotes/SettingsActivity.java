@@ -11,12 +11,14 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.ColorInt;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.graphics.ColorUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.enrico.colorpicker.colorDialog;
 
@@ -120,7 +122,8 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
 
             case 1:
                 img1.setImageDrawable(gd);
-                colourPrimary = selectedColor;
+                colourPrimary = ColorUtils.setAlphaComponent(selectedColor, 255);
+                gd.setColor(colourPrimary);
                 break;
 
             case 2:
@@ -136,6 +139,7 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
     }
 
     public void saveColours(View view) {
+
         SharedPreferences.Editor editor = preferences.edit();
         editor.putInt("colourPrimary", colourPrimary);
         editor.putInt("colourFont", colourFont);
