@@ -8,3 +8,8 @@
 /captures
 /images
 .externalNativeBuild
+.idea/
+gradle.properties
+gradle/
+gradlew
+gradlew.bat
