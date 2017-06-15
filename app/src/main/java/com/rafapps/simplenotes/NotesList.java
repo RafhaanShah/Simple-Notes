@@ -3,12 +3,13 @@ package com.rafapps.simplenotes;
 import android.app.ActivityManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,7 +23,6 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,6 +38,7 @@ public class NotesList extends AppCompatActivity implements SearchView.OnQueryTe
     private String[] datesList;
     private RecyclerView recyclerView;
     private NotesListAdapter notesListAdapter;
+    private FloatingActionButton fab;
     private SharedPreferences preferences;
 
     @Override
@@ -51,23 +52,30 @@ public class NotesList extends AppCompatActivity implements SearchView.OnQueryTe
 
         getFiles();
 
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
 
         notesListAdapter = new NotesListAdapter(filesList, datesList);
         recyclerView.setAdapter(notesListAdapter);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0 || dy < 0 && fab.isShown())
+                    fab.hide();
+            }
 
-        Snackbar sn = Snackbar.make(findViewById(R.id.coordinatorLayout), "", 10000)
-                .setAction("Create a new note", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent nextScreen = new Intent(getApplicationContext(), MainActivity.class);
-                        startActivity(nextScreen);
-                    }
-                });
-        sn.setActionTextColor(Color.WHITE);
-        sn.show();
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    fab.show();
+                }
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+        });
 
         applyColours();
     }
@@ -87,6 +95,8 @@ public class NotesList extends AppCompatActivity implements SearchView.OnQueryTe
 
         findViewById(R.id.toolbar).setBackgroundColor(preferences.getInt("colourPrimary", 0));
         findViewById(R.id.constraintLayout).setBackgroundColor(preferences.getInt("colourBackground", 0));
+
+        fab.setBackgroundTintList(ColorStateList.valueOf(preferences.getInt("colourPrimary", 0)));
 
     }
 
@@ -138,10 +148,6 @@ public class NotesList extends AppCompatActivity implements SearchView.OnQueryTe
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.newButton:
-                Intent nextScreen = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(nextScreen);
-                return (true);
             case R.id.settingsButton:
                 Intent settingsScreen = new Intent(getApplicationContext(), SettingsActivity.class);
                 startActivity(settingsScreen);
@@ -182,6 +188,11 @@ public class NotesList extends AppCompatActivity implements SearchView.OnQueryTe
     @Override
     public boolean onQueryTextSubmit(String query) {
         return false;
+    }
+
+    public void newNote(View view) {
+        Intent nextScreen = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(nextScreen);
     }
 
     private void getFiles() {

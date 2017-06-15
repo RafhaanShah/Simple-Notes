@@ -38,7 +38,7 @@ public class DeleteNoteTest {
     @Test
     public void deleteNoteTest() {
         ViewInteraction actionMenuItemView = onView(
-                allOf(withId(R.id.newButton), withContentDescription("New Note"), isDisplayed()));
+                allOf(withId(R.id.fab), isDisplayed()));
         actionMenuItemView.perform(click());
 
         ViewInteraction appCompatEditText = onView(

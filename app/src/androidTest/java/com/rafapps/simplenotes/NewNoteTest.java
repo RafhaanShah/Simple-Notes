@@ -38,7 +38,7 @@ public class NewNoteTest {
     @Test
     public void newNoteTest() {
         ViewInteraction appCompatButton = onView(
-                allOf(withId(R.id.newButton), isDisplayed()));
+                allOf(withId(R.id.fab), isDisplayed()));
         appCompatButton.perform(click());
 
         ViewInteraction appCompatEditText = onView(

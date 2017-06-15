@@ -13,12 +13,6 @@
         android:id="@+id/settingsButton"
         android:icon="@drawable/ic_settings_white_24dp"
         android:title="Settings"
-        app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/newButton"
-        android:icon="@drawable/ic_add_circle_outline_white_24dp"
-        android:title="New Note"
         app:showAsAction="always" />
 
 </menu>

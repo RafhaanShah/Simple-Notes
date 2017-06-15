@@ -25,4 +25,14 @@
 
     <include layout="@layout/content_notes_list" />
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        app:fabSize="normal"
+        android:onClick="newNote"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_note" />
+
 </android.support.design.widget.CoordinatorLayout>
