@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -186,8 +187,8 @@ public class MainActivity extends AppCompatActivity {
                             window.getDecorView().setBackgroundResource(R.color.red);
                     }
                 });
-                ad.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(preferences.getInt("colourFont", 0));
-                ad.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(preferences.getInt("colourFont", 0));
+                ad.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(Color.WHITE);
+                ad.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(Color.WHITE);
                 return (true);
         }
         return (super.onOptionsItemSelected(item));
@@ -230,6 +231,7 @@ public class MainActivity extends AppCompatActivity {
                 deleteFile(oldTitle + ".txt");
             }
             writeFile(localTitle);
+            oldTitle = localTitle;
         }
     }
 
