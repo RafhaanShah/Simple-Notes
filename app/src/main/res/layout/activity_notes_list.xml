@@ -31,6 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         app:fabSize="normal"
+        android:scaleType="center"
         android:onClick="newNote"
         android:layout_margin="16dp"
         android:src="@drawable/ic_note" />
