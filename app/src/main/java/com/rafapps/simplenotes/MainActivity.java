@@ -159,11 +159,7 @@ public class MainActivity extends AppCompatActivity {
                         .setMessage("Are you sure you want to delete this note?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                if (titleChanged) {
-                                    deleteFile(oldTitle + ".txt");
-                                } else {
-                                    deleteFile(title.getText().toString() + ".txt");
-                                }
+                                deleteFile(oldTitle + ".txt");
                                 textChanged = false;
                                 titleChanged = false;
                                 finish();
@@ -179,14 +175,6 @@ public class MainActivity extends AppCompatActivity {
                 if (ad.getWindow() != null) {
                     ad.getWindow().getDecorView().setBackgroundColor(preferences.getInt("colourPrimary", 0));
                 }
-                ad.setOnShowListener(new DialogInterface.OnShowListener() {
-                    @Override
-                    public void onShow(final DialogInterface dialog) {
-                        Window window = ((AlertDialog) dialog).getWindow();
-                        if (window != null)
-                            window.getDecorView().setBackgroundResource(R.color.red);
-                    }
-                });
                 ad.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(Color.WHITE);
                 ad.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(Color.WHITE);
                 return (true);
@@ -195,7 +183,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void saveFile() {
-        String localTitle = title.getText().toString();
+        if(!titleChanged && !textChanged){
+            return;
+        }
+
+        String localTitle = title.getText().toString().trim();
         String theText = editText.getText().toString();
 
         if (localTitle.isEmpty() && theText.isEmpty()) {

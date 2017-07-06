@@ -55,8 +55,10 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
         GradientDrawable gd1 = new GradientDrawable();
         gd1.setShape(GradientDrawable.OVAL);
         gd1.setColor(colourPrimary);
+        gd1.setStroke(2, Color.BLACK);
         GradientDrawable gd2 = new GradientDrawable();
         gd2.setShape(GradientDrawable.OVAL);
+        gd2.setStroke(2, Color.BLACK);
         gd2.setColor(colourFont);
         GradientDrawable gd3 = new GradientDrawable();
         gd3.setShape(GradientDrawable.OVAL);
