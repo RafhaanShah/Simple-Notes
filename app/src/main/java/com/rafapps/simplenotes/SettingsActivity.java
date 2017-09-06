@@ -14,10 +14,12 @@ import android.support.annotation.ColorInt;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.enrico.colorpicker.colorDialog;
@@ -125,7 +127,12 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
             case 1:
                 img1.setImageDrawable(gd);
                 if (Color.alpha(selectedColor) != 255) {
-                    Toast.makeText(getApplicationContext(), "App bar colour cannot have any transparency", Toast.LENGTH_SHORT).show();
+                    Toast t = Toast.makeText(getApplicationContext(), "App bar colour cannot have any transparency", Toast.LENGTH_LONG);
+                    TextView tv = (TextView) t.getView().findViewById(android.R.id.message);
+                    if( tv != null) {
+                        tv.setGravity(Gravity.CENTER);
+                    }
+                    t.show();
                 }
                 colourPrimary = ColorUtils.setAlphaComponent(selectedColor, 255);
                 gd.setColor(colourPrimary);

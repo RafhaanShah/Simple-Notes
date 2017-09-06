@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
             if ("text/plain".equals(type)) {
                 String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
                 editText.setText(sharedText);
+                textChanged = true;
             }
         } else {
             title.setText(noteTitle);
@@ -187,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        String localTitle = title.getText().toString().trim();
+        String localTitle = title.getText().toString().trim().replace("/", " ");
         String theText = editText.getText().toString();
 
         if (localTitle.isEmpty() && theText.isEmpty()) {
