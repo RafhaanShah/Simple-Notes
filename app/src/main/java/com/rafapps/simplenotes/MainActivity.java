@@ -14,8 +14,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -31,82 +31,79 @@ import java.io.OutputStreamWriter;
 
 public class MainActivity extends AppCompatActivity {
 
-    private EditText editText;
-    private EditText title;
-    private String oldTitle;
-    private boolean textChanged;
-    private boolean titleChanged;
+    private EditText noteText;
+    private EditText titleText;
+    private String title;
+    private String note;
     private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
+        titleText = findViewById(R.id.titleText);
+        noteText = findViewById(R.id.editText);
+
         Intent intent = getIntent();
         String action = intent.getAction();
         String type = intent.getType();
-        String noteTitle = intent.getStringExtra("noteTitle");
 
-        title = (EditText) findViewById(R.id.title);
-        editText = (EditText) findViewById(R.id.editText);
-
+        // If activity started from a share intent
         if (Intent.ACTION_SEND.equals(action) && type != null) {
             if ("text/plain".equals(type)) {
                 String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
-                editText.setText(sharedText);
-                textChanged = true;
+                noteText.setText(sharedText);
             }
-        } else {
-            title.setText(noteTitle);
-            editText.setText(openFile(noteTitle));
+        } else { // If activity started from notes list, or orientation change
+
+            //TODO: Fix orientation change problems
+
+            /*
+            String oldTitle = titleText.getText().toString().trim();
+            String oldNote = noteText.getText().toString().trim();
+
+            if(!TextUtils.isEmpty(oldTitle) || !TextUtils.isEmpty(oldNote)){
+
+            }
+            */
+
+            title = intent.getStringExtra("noteTitle");
+
+            if (title == null) {
+                title = "";
+                note = "";
+                noteText.requestFocus();
+            } else {
+                titleText.setText(title);
+                note = openFile(title);
+                noteText.setText(note);
+            }
         }
 
-        editText.addTextChangedListener(new TextWatcher() {
+        Log.v("verbose", "OPENED TITLE " + title);
+        Log.v("verbose", "OPENED NOTE " + note);
 
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                textChanged = true;
-            }
-        });
-
-        title.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                titleChanged = true;
-            }
-        });
-
-        if (noteTitle == null) {
-            oldTitle = "";
-            editText.requestFocus();
-        } else {
-            oldTitle = noteTitle;
-        }
         applyColours();
+    }
+
+    @Override
+    public void onBackPressed() {
+        saveFile();
+        super.onBackPressed();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     private void applyColours() {
@@ -119,16 +116,16 @@ public class MainActivity extends AppCompatActivity {
             ActivityManager.TaskDescription tDesc = new ActivityManager.TaskDescription("Simple Notes",
                     BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher), preferences.getInt("colourPrimary", 0));
             setTaskDescription(tDesc);
-            editText.setBackgroundTintList(ColorStateList.valueOf(preferences.getInt("colourPrimary", 0)));
-            title.setBackgroundTintList(ColorStateList.valueOf(preferences.getInt("colourPrimary", 0)));
+            noteText.setBackgroundTintList(ColorStateList.valueOf(preferences.getInt("colourPrimary", 0)));
+            titleText.setBackgroundTintList(ColorStateList.valueOf(preferences.getInt("colourPrimary", 0)));
             window.setNavigationBarColor(preferences.getInt("colourPrimary", 0));
         }
 
         findViewById(R.id.toolbar).setBackgroundColor(preferences.getInt("colourPrimary", 0));
         findViewById(R.id.scrollView).setBackgroundColor(preferences.getInt("colourBackground", 0));
 
-        title.setTextColor(preferences.getInt("colourFont", 0));
-        editText.setTextColor(preferences.getInt("colourFont", 0));
+        titleText.setTextColor(preferences.getInt("colourFont", 0));
+        noteText.setTextColor(preferences.getInt("colourFont", 0));
 
     }
 
@@ -142,14 +139,14 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.undoButton:
-                editText.setText(openFile(oldTitle));
-                editText.setSelection(editText.getText().length());
+                noteText.setText(note);
+                noteText.setSelection(noteText.getText().length());
                 return (true);
 
             case R.id.shareButton:
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, editText.getText().toString());
+                sendIntent.putExtra(Intent.EXTRA_TEXT, noteText.getText().toString());
                 sendIntent.setType("text/plain");
                 startActivity(sendIntent);
                 return (true);
@@ -160,9 +157,7 @@ public class MainActivity extends AppCompatActivity {
                         .setMessage("Are you sure you want to delete this note?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                deleteFile(oldTitle + ".txt");
-                                textChanged = false;
-                                titleChanged = false;
+                                deleteFile(title + ".txt");
                                 finish();
                             }
                         })
@@ -184,61 +179,69 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void saveFile() {
-        if(!titleChanged && !textChanged){
+        // Get current title and note
+        String newTitle = titleText.getText().toString().trim().replace("/", " ");
+        String newNote = noteText.getText().toString().trim();
+
+        Log.v("verbose", "NEW TITLE " + newTitle);
+        Log.v("verbose", "NEW TEXT " + newNote);
+
+        // Check if title and note are empty
+        if (TextUtils.isEmpty(newTitle) && TextUtils.isEmpty(newNote)) {
+            Log.v("verbose", "title and note empty");
             return;
         }
 
-        String localTitle = title.getText().toString().trim().replace("/", " ");
-        String theText = editText.getText().toString();
-
-        if (localTitle.isEmpty() && theText.isEmpty()) {
+        // Check if title and note are unchanged
+        if (newTitle.equals(title) && newNote.equals(note)) {
+            Log.v("verbose", "NOTHING CHANGED");
             return;
         }
 
-        if (localTitle.isEmpty()) {
-            if (oldTitle.equals("")) {
-                localTitle = "Note";
-                titleChanged = true;
-            } else {
-                localTitle = oldTitle;
-                titleChanged = false;
-            }
+        // Get file name to be saved
+        if(!title.equals(newTitle) || TextUtils.isEmpty(newTitle)) {
+            newTitle = newFileName(newTitle);
+            Log.v("verbose", "saved file name is " + newTitle);
         }
 
-        if (oldTitle.equals(localTitle)) {
-            titleChanged = false;
+        // Save the file with the new file name and content
+        writeFile(newTitle, newNote);
+
+        // If the title is not empty and the file name has changed then delete the old file
+        if (!TextUtils.isEmpty(title) && !newTitle.equals(title)) {
+            Log.v("verbose", "deleted file name is " + title);
+            deleteFile(title + ".txt");
         }
 
-        if (textChanged || titleChanged) {
-            if (titleChanged) {
-                if (fileExists(localTitle)) {
-                    int i = 1;
-                    while (true) {
-                        if (!fileExists(localTitle + " (" + i + ")")) {
-                            localTitle = (localTitle + " (" + i + ")");
-                            break;
-                        }
-                        i++;
-                    }
-                }
-                deleteFile(oldTitle + ".txt");
-            }
-            writeFile(localTitle);
-            oldTitle = localTitle;
-        }
     }
 
-    private void writeFile(String fileName) {
+    private String newFileName(String name) {
+        // If it is empty, give it a default title of "Note"
+        if (TextUtils.isEmpty(name)) {
+            name = "Note";
+        }
+        // If the name already exists, append a number to it
+        if (fileExists(name)) {
+            int i = 1;
+            while (true) {
+                if (!fileExists(name + " (" + i + ")") || title.equals(name + " (" + i + ")")) {
+                    name = (name + " (" + i + ")");
+                    break;
+                }
+                i++;
+            }
+        }
+        return name;
+    }
+
+    private void writeFile(String fileName, String fileContent) {
         try {
             OutputStreamWriter out = new OutputStreamWriter(openFileOutput(fileName + ".txt", 0));
-            out.write(editText.getText().toString());
+            out.write(fileContent);
             out.close();
         } catch (Throwable t) {
             Toast.makeText(this, "Exception: " + t.toString(), Toast.LENGTH_LONG).show();
         }
-
-        titleChanged = false;
-        textChanged = false;
     }
 
     private boolean fileExists(String fileName) {
@@ -246,11 +249,11 @@ public class MainActivity extends AppCompatActivity {
         return file.exists();
     }
 
-    private String openFile(String file) {
+    private String openFile(String fileName) {
         String content = "";
-        if (fileExists(file)) {
+        if (fileExists(fileName)) {
             try {
-                InputStream in = openFileInput(file + ".txt");
+                InputStream in = openFileInput(fileName + ".txt");
                 if (in != null) {
                     InputStreamReader tmp = new InputStreamReader(in);
                     BufferedReader reader = new BufferedReader(tmp);
@@ -266,12 +269,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Exception: " + e.toString(), Toast.LENGTH_LONG).show();
             }
         }
-        return content;
+        return content.trim();
     }
 
-    @Override
-    public void onPause() {
-        saveFile();
-        super.onPause();
-    }
 }

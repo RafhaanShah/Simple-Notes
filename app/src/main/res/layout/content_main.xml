@@ -17,7 +17,7 @@
         android:orientation="vertical">
 
         <EditText
-            android:id="@+id/title"
+            android:id="@+id/titleText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
