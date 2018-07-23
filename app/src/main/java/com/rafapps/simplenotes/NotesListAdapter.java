@@ -2,16 +2,19 @@ package com.rafapps.simplenotes;
 
 import android.content.Intent;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+
 class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder> {
 
     private String[] notesList;
-    private String[] datesList;
+    private Long[] datesList;
 
     static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -21,8 +24,8 @@ class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder>
 
         ViewHolder(View v) {
             super(v);
-            noteTitle = (TextView) v.findViewById(R.id.noteTitle);
-            noteDate = (TextView) v.findViewById(R.id.noteDate);
+            noteTitle = v.findViewById(R.id.noteTitle);
+            noteDate = v.findViewById(R.id.noteDate);
             noteTitle.setTextColor(PreferenceManager.getDefaultSharedPreferences(itemView.getContext()).getInt("colourFont", 0));
             noteDate.setTextColor(PreferenceManager.getDefaultSharedPreferences(itemView.getContext()).getInt("colourFont", 0));
             v.setOnClickListener(this);
@@ -35,27 +38,29 @@ class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder>
             itemView.getContext().startActivity(nextScreen);
         }
 
-        void setData(String title, String date) {
+        void setData(String title, Long date) {
             stringTitle = title;
             noteTitle.setText(title);
-            noteDate.setText(date);
+            String dateText = DateFormat.getDateInstance(DateFormat.MEDIUM).format(date) + "\n" + DateFormat.getTimeInstance(DateFormat.SHORT).format(date);
+            noteDate.setText(dateText);
         }
     }
 
-    NotesListAdapter(String[] notes, String[] dates) {
+    NotesListAdapter(String[] notes, Long[] dates) {
         notesList = notes;
         datesList = dates;
     }
 
+    @NonNull
     @Override
-    public NotesListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public NotesListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View inflatedView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item, parent, false);
         return new ViewHolder(inflatedView);
     }
 
     @Override
-    public void onBindViewHolder(NotesListAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull NotesListAdapter.ViewHolder holder, int position) {
         holder.setData(notesList[position], datesList[position]);
     }
 
@@ -64,10 +69,9 @@ class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder>
         return notesList.length;
     }
 
-    void updateDataList(String[] files, String[] dates) {
+    void updateDataList(String[] files, Long[] dates) {
         notesList = files;
         datesList = dates;
         notifyDataSetChanged();
     }
-
 }

@@ -10,7 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -25,18 +24,15 @@ import android.view.inputmethod.EditorInfo;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class NotesList extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     private String[] filesList;
-    private String[] datesList;
+    private Long[] datesList;
     private RecyclerView recyclerView;
     private NotesListAdapter notesListAdapter;
     private FloatingActionButton fab;
@@ -46,16 +42,16 @@ public class NotesList extends AppCompatActivity implements SearchView.OnQueryTe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notes_list);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         getFiles();
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = findViewById(R.id.fab);
 
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView = findViewById(R.id.recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
 
@@ -119,7 +115,7 @@ public class NotesList extends AppCompatActivity implements SearchView.OnQueryTe
         );
 
 
-        SearchView searchView = (SearchView) findViewById(R.id.searchButton);
+        SearchView searchView = findViewById(R.id.searchButton);
         if (searchView != null) {
             if (!searchView.isIconified()) {
                 searchView.onActionViewCollapsed();
@@ -139,7 +135,7 @@ public class NotesList extends AppCompatActivity implements SearchView.OnQueryTe
         getMenuInflater().inflate(R.menu.menu_notes_list, menu);
 
         final MenuItem searchItem = menu.findItem(R.id.searchButton);
-        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        final SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setOnQueryTextListener(this);
         searchView.setMaxWidth(Integer.MAX_VALUE);
         searchView.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
@@ -166,7 +162,7 @@ public class NotesList extends AppCompatActivity implements SearchView.OnQueryTe
         query = query.toLowerCase();
 
         final List<String> filteredList = new ArrayList<>();
-        final List<String> filteredList2 = new ArrayList<>();
+        final List<Long> filteredList2 = new ArrayList<>();
 
         for (int i = 0; i < filesList.length; i++) {
 
@@ -179,7 +175,7 @@ public class NotesList extends AppCompatActivity implements SearchView.OnQueryTe
 
 
         recyclerView.setLayoutManager(new LinearLayoutManager(NotesList.this));
-        notesListAdapter = new NotesListAdapter(filteredList.toArray(new String[0]), filteredList2.toArray(new String[0]));
+        notesListAdapter = new NotesListAdapter(filteredList.toArray(new String[0]), filteredList2.toArray(new Long[0]));
         recyclerView.setAdapter(notesListAdapter);
         notesListAdapter.notifyDataSetChanged();
 
@@ -206,25 +202,23 @@ public class NotesList extends AppCompatActivity implements SearchView.OnQueryTe
         });
 
         filesList = new String[files.length];
-        datesList = new String[files.length];
+        datesList = new Long[files.length];
 
         Arrays.sort(files, new Comparator<File>() {
             public int compare(File f1, File f2) {
-                return Long.valueOf(f2.lastModified()).compareTo(f1.lastModified());
+                return Long.compare(f2.lastModified(), f1.lastModified());
             }
         });
 
         for (int i = 0; i < files.length; i++) {
             filesList[i] = (files[i].getName().substring(0, files[i].getName().length() - 4));
-            Date d = new Date(files[i].lastModified());
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm" + "\n" + "dd/MM/yyyy", Locale.getDefault());
-            datesList[i] = sdf.format(d);
+            datesList[i] = files[i].lastModified();
         }
     }
 
     @Override
     public void onBackPressed() {
-        SearchView searchView = (SearchView) findViewById(R.id.searchButton);
+        SearchView searchView = findViewById(R.id.searchButton);
 
         if (!searchView.isIconified()) {
             searchView.onActionViewCollapsed();
