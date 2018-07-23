@@ -62,18 +62,7 @@ public class MainActivity extends AppCompatActivity {
                 String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
                 noteText.setText(sharedText);
             }
-        } else { // If activity started from notes list, or orientation change
-
-            //TODO: Fix orientation change problems
-
-            /*
-            String oldTitle = titleText.getText().toString().trim();
-            String oldNote = noteText.getText().toString().trim();
-
-            if(!TextUtils.isEmpty(oldTitle) || !TextUtils.isEmpty(oldNote)){
-
-            }
-            */
+        } else { // If activity started from notes list
 
             title = intent.getStringExtra("noteTitle");
 
@@ -95,8 +84,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onRestart() {
+        super.onRestart();
+        note = noteText.getText().toString().trim();
+        Log.v("verbose", "RESTARTED");
+    }
+
+    @Override
+    public void onPause() {
+        Log.v("verbose", "PAUSE");
+        if (!isChangingConfigurations()) {
+            Log.v("verbose", "NO CONFIG CHANGE");
+            saveFile();
+        }
+        super.onPause();
+    }
+
+    @Override
     public void onBackPressed() {
-        saveFile();
         super.onBackPressed();
     }
 
@@ -188,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Check if title and note are empty
         if (TextUtils.isEmpty(newTitle) && TextUtils.isEmpty(newNote)) {
-            Log.v("verbose", "title and note empty");
+            Log.v("verbose", "EMPTY TITLE AND NOTE");
             return;
         }
 
@@ -198,10 +203,11 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        // Get file name to be saved
-        if(!title.equals(newTitle) || TextUtils.isEmpty(newTitle)) {
+        // Get file name to be saved if the title has changed or it is empty
+        if (!title.equals(newTitle) || TextUtils.isEmpty(newTitle)) {
             newTitle = newFileName(newTitle);
-            Log.v("verbose", "saved file name is " + newTitle);
+            titleText.setText(newTitle);
+            Log.v("verbose", "SAVED FILE " + newTitle);
         }
 
         // Save the file with the new file name and content
@@ -209,9 +215,12 @@ public class MainActivity extends AppCompatActivity {
 
         // If the title is not empty and the file name has changed then delete the old file
         if (!TextUtils.isEmpty(title) && !newTitle.equals(title)) {
-            Log.v("verbose", "deleted file name is " + title);
+            Log.v("verbose", "DELETED FILE " + title);
             deleteFile(title + ".txt");
         }
+
+        // Set the title to be the new saved title for when the home button is pressed
+        title = newTitle;
 
     }
 
