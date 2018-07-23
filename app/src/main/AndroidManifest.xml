@@ -11,9 +11,9 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".MainActivity"
+            android:name=".NoteActivity"
             android:label="@string/app_name"
-            android:parentActivityName=".NotesList"
+            android:parentActivityName=".NotesListActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -23,7 +23,7 @@
         </activity>
 
         <activity
-            android:name=".NotesList"
+            android:name=".NotesListActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -35,7 +35,7 @@
 
         <activity
             android:name=".SettingsActivity"
-            android:parentActivityName=".NotesList" />
+            android:parentActivityName=".NotesListActivity" />
     </application>
 
 </manifest>

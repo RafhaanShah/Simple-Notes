@@ -30,7 +30,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-public class NotesList extends AppCompatActivity implements SearchView.OnQueryTextListener {
+public class NotesListActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     private String[] filesList;
     private Long[] datesList;
@@ -179,7 +179,7 @@ public class NotesList extends AppCompatActivity implements SearchView.OnQueryTe
         }
 
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(NotesList.this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(NotesListActivity.this));
         notesListAdapter = new NotesListAdapter(filteredList.toArray(new String[0]), filteredList2.toArray(new Long[0]));
         recyclerView.setAdapter(notesListAdapter);
         notesListAdapter.notifyDataSetChanged();
@@ -194,7 +194,7 @@ public class NotesList extends AppCompatActivity implements SearchView.OnQueryTe
     }
 
     public void newNote(View view) {
-        Intent nextScreen = new Intent(getApplicationContext(), MainActivity.class);
+        Intent nextScreen = new Intent(getApplicationContext(), NoteActivity.class);
         startActivity(nextScreen);
     }
 

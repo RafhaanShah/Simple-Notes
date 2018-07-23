@@ -33,7 +33,7 @@ class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder>
 
         @Override
         public void onClick(View v) {
-            Intent nextScreen = new Intent(itemView.getContext(), MainActivity.class);
+            Intent nextScreen = new Intent(itemView.getContext(), NoteActivity.class);
             nextScreen.putExtra("noteTitle", stringTitle);
             itemView.getContext().startActivity(nextScreen);
         }

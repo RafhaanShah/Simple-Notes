@@ -1,9 +1,9 @@
 package com.rafapps.simplenotes;
 
 import android.support.test.espresso.ViewInteraction;
+import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.support.test.filters.LargeTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -25,15 +25,13 @@ import static android.support.test.espresso.matcher.ViewMatchers.withContentDesc
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.not;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class DeleteNoteTest {
 
     @Rule
-    public ActivityTestRule<NotesList> mActivityTestRule = new ActivityTestRule<>(NotesList.class);
+    public ActivityTestRule<NotesListActivity> mActivityTestRule = new ActivityTestRule<>(NotesListActivity.class);
 
     @Test
     public void deleteNoteTest() {

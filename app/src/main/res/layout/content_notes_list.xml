@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.rafapps.simplenotes.NotesList"
+    tools:context="com.rafapps.simplenotes.NotesListActivity"
     tools:showIn="@layout/activity_notes_list">
 
     <android.support.v7.widget.RecyclerView

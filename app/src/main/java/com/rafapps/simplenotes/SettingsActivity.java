@@ -67,9 +67,9 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
         gd3.setStroke(2, Color.BLACK);
         gd3.setColor(colourBackground);
 
-        img1 = (ImageView) findViewById(R.id.imageView1);
-        img2 = (ImageView) findViewById(R.id.imageView2);
-        img3 = (ImageView) findViewById(R.id.imageView3);
+        img1 = findViewById(R.id.imageView1);
+        img2 = findViewById(R.id.imageView2);
+        img3 = findViewById(R.id.imageView3);
 
         img1.setImageDrawable(gd1);
         img2.setImageDrawable(gd2);
@@ -128,7 +128,7 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
                 img1.setImageDrawable(gd);
                 if (Color.alpha(selectedColor) != 255) {
                     Toast t = Toast.makeText(getApplicationContext(), "App bar colour cannot have any transparency", Toast.LENGTH_LONG);
-                    TextView tv = (TextView) t.getView().findViewById(android.R.id.message);
+                    TextView tv = t.getView().findViewById(android.R.id.message);
                     if( tv != null) {
                         tv.setGravity(Gravity.CENTER);
                     }
@@ -158,7 +158,7 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
         editor.putInt("colourBackground", colourBackground);
         editor.apply();
 
-        Intent nextScreen = new Intent(this, NotesList.class);
+        Intent nextScreen = new Intent(this, NotesListActivity.class);
         nextScreen.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(nextScreen);
         finish();
