@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -141,6 +142,7 @@ public class NotesList extends AppCompatActivity implements SearchView.OnQueryTe
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setOnQueryTextListener(this);
         searchView.setMaxWidth(Integer.MAX_VALUE);
+        searchView.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
 
         return true;
     }

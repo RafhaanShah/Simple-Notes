@@ -13,7 +13,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:focusableInTouchMode="true"
         android:orientation="vertical">
 
         <EditText
@@ -22,6 +21,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="Note Title:"
+            android:imeOptions="flagNoExtractUi"
             android:inputType="textCapWords"
             android:maxLength="36"
             android:paddingEnd="8dp"
@@ -39,6 +39,7 @@
             android:ems="10"
             android:gravity="top"
             android:hint="Enter Note:"
+            android:imeOptions="flagNoExtractUi"
             android:inputType="textCapSentences|textMultiLine"
             android:paddingEnd="8dp"
             android:paddingStart="8dp"
