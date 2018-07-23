@@ -82,7 +82,7 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(preferences.getInt("colourPrimary", 0));
+            window.setStatusBarColor(HelperUtils.darkenColor(preferences.getInt("colourPrimary", 0), 0.2));
             ActivityManager.TaskDescription tDesc = new ActivityManager.TaskDescription("Simple Notes",
                     BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher), preferences.getInt("colourPrimary", 0));
             setTaskDescription(tDesc);

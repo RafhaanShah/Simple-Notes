@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.ColorUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -113,11 +114,10 @@ public class NoteActivity extends AppCompatActivity {
 
     private void applyColours() {
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(preferences.getInt("colourPrimary", 0));
+            window.setStatusBarColor(HelperUtils.darkenColor(preferences.getInt("colourPrimary", 0), 0.2));
             ActivityManager.TaskDescription tDesc = new ActivityManager.TaskDescription("Simple Notes",
                     BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher), preferences.getInt("colourPrimary", 0));
             setTaskDescription(tDesc);
@@ -132,6 +132,8 @@ public class NoteActivity extends AppCompatActivity {
         titleText.setTextColor(preferences.getInt("colourFont", 0));
         noteText.setTextColor(preferences.getInt("colourFont", 0));
 
+        titleText.setHintTextColor(ColorUtils.setAlphaComponent(preferences.getInt("colourFont", 0), 120));
+        noteText.setHintTextColor(ColorUtils.setAlphaComponent(preferences.getInt("colourFont", 0), 120));
     }
 
     @Override
