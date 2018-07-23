@@ -90,6 +90,7 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
         }
         if (getSupportActionBar() != null) {
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable((preferences.getInt("colourPrimary", 0))));
+            getSupportActionBar().setTitle("Settings");
         }
         findViewById(R.id.constraintLayout).setBackgroundColor(preferences.getInt("colourBackground", 0));
 

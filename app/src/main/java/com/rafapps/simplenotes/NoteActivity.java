@@ -64,17 +64,18 @@ public class NoteActivity extends AppCompatActivity {
                 noteText.setText(sharedText);
             }
         } else { // If activity started from notes list
-
             title = intent.getStringExtra("noteTitle");
 
             if (title == null) {
                 title = "";
                 note = "";
                 noteText.requestFocus();
+                getSupportActionBar().setTitle("New Note");
             } else {
                 titleText.setText(title);
                 note = openFile(title);
                 noteText.setText(note);
+                getSupportActionBar().setTitle(title);
             }
         }
 
