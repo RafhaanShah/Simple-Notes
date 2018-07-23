@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.widget.TextView;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -34,6 +35,7 @@ public class NotesList extends AppCompatActivity implements SearchView.OnQueryTe
     private String[] filesList;
     private Long[] datesList;
     private RecyclerView recyclerView;
+    private TextView emptyText;
     private NotesListAdapter notesListAdapter;
     private FloatingActionButton fab;
     private SharedPreferences preferences;
@@ -50,7 +52,7 @@ public class NotesList extends AppCompatActivity implements SearchView.OnQueryTe
         getFiles();
 
         fab = findViewById(R.id.fab);
-
+        emptyText = findViewById(R.id.emptyText);
         recyclerView = findViewById(R.id.recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -79,7 +81,6 @@ public class NotesList extends AppCompatActivity implements SearchView.OnQueryTe
 
     private void applyColours() {
         checkColours();
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -92,9 +93,8 @@ public class NotesList extends AppCompatActivity implements SearchView.OnQueryTe
 
         findViewById(R.id.toolbar).setBackgroundColor(preferences.getInt("colourPrimary", 0));
         findViewById(R.id.constraintLayout).setBackgroundColor(preferences.getInt("colourBackground", 0));
-
+        emptyText.setTextColor(preferences.getInt("colourFont", 0));
         fab.setBackgroundTintList(ColorStateList.valueOf(preferences.getInt("colourPrimary", 0)));
-
     }
 
     private void checkColours() {
@@ -114,7 +114,6 @@ public class NotesList extends AppCompatActivity implements SearchView.OnQueryTe
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
         );
 
-
         SearchView searchView = findViewById(R.id.searchButton);
         if (searchView != null) {
             if (!searchView.isIconified()) {
@@ -124,7 +123,13 @@ public class NotesList extends AppCompatActivity implements SearchView.OnQueryTe
 
         getFiles();
         notesListAdapter.updateDataList(filesList, datesList);
-        recyclerView.invalidate();
+        //recyclerView.invalidate();
+
+        if (notesListAdapter.getItemCount() == 0) {
+            emptyText.setVisibility(View.VISIBLE);
+        } else if (emptyText.getVisibility() == View.VISIBLE) {
+            emptyText.setVisibility(View.GONE);
+        }
 
         findViewById(R.id.coordinatorLayout).clearFocus();
 

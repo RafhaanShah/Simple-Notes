@@ -25,6 +25,18 @@
 
     <include layout="@layout/content_notes_list" />
 
+    <TextView
+        android:id="@+id/emptyText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_gravity="center"
+        android:textAlignment="center"
+        android:text="Press the button on the bottom right to add a new note!"
+        android:textSize="18sp"
+        android:visibility="gone" />
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
