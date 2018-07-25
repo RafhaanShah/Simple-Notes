@@ -7,78 +7,98 @@
     android:layout_height="match_parent"
     tools:context="com.rafapps.simplenotes.SettingsActivity">
 
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="120dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="35dp"
-        android:layout_marginTop="35dp"
-        android:onClick="showPicker1"
-        android:text="App Bar"
-        android:textColor="@android:color/white"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:divider="?android:dividerHorizontal"
+        android:orientation="vertical"
+        android:showDividers="middle|end">
+
+        <LinearLayout
+            android:id="@+id/layoutAccent"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:gravity="center_vertical"
+            android:onClick="showPicker1"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/imageAccent"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/square"
+                android:src="@drawable/ic_bg" />
+
+            <TextView
+                android:id="@+id/textAccent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="Accent Colour"
+                android:textSize="16dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutFont"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:gravity="center_vertical"
+            android:onClick="showPicker2"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/layoutAccent">
+
+            <ImageView
+                android:id="@+id/imageFont"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/square"
+                android:src="@drawable/ic_bg" />
+
+            <TextView
+                android:id="@+id/textFont"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="Font Colour"
+                android:textSize="16dp" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutBackground"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:gravity="center_vertical"
+            android:onClick="showPicker3"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/layoutFont">
+
+            <ImageView
+                android:id="@+id/imageBackground"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/square"
+                android:src="@drawable/ic_bg" />
+
+            <TextView
+                android:id="@+id/textBackground"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="Background Colour"
+                android:textSize="16dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
     <Button
-        android:id="@+id/button2"
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="35dp"
-        android:layout_marginTop="35dp"
-        android:onClick="showPicker2"
-        android:text="Font Colour"
-        android:textColor="@android:color/white"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button1" />
-
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="35dp"
-        android:layout_marginTop="35dp"
-        android:onClick="showPicker3"
-        android:text="Background"
-        android:textColor="@android:color/white"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button2" />
-
-
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginStart="120dp"
-        android:layout_marginTop="35dp"
-        android:contentDescription="Colour Circle"
-        app:layout_constraintLeft_toRightOf="@+id/button1"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/circle" />
-
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginStart="120dp"
-        android:layout_marginTop="20dp"
-        android:contentDescription="Colour Circle"
-        app:layout_constraintLeft_toRightOf="@+id/button2"
-        app:layout_constraintTop_toBottomOf="@id/imageView1"
-        app:srcCompat="@drawable/circle" />
-
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginStart="120dp"
-        android:layout_marginTop="20dp"
-        android:contentDescription="Colour Circle"
-        app:layout_constraintLeft_toRightOf="@+id/button3"
-        app:layout_constraintTop_toBottomOf="@id/imageView2"
-        app:srcCompat="@drawable/circle" />
-
-    <Button
-        android:id="@+id/button4"
+        android:id="@+id/buttonApply"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="7dp"

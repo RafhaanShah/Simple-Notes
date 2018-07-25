@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -27,9 +26,9 @@ import com.enrico.colorpicker.colorDialog;
 
 public class SettingsActivity extends AppCompatActivity implements colorDialog.ColorSelectedListener {
 
-    private ImageView img1;
-    private ImageView img2;
-    private ImageView img3;
+    private ImageView imageAccent;
+    private ImageView imageFont;
+    private ImageView imageBackground;
 
     private SharedPreferences preferences;
 
@@ -55,26 +54,9 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
         colourFont = preferences.getInt("colourFont", 0);
         colourBackground = preferences.getInt("colourBackground", 0);
 
-        GradientDrawable gd1 = new GradientDrawable();
-        gd1.setShape(GradientDrawable.OVAL);
-        gd1.setColor(colourPrimary);
-        gd1.setStroke(2, Color.BLACK);
-        GradientDrawable gd2 = new GradientDrawable();
-        gd2.setShape(GradientDrawable.OVAL);
-        gd2.setStroke(2, Color.BLACK);
-        gd2.setColor(colourFont);
-        GradientDrawable gd3 = new GradientDrawable();
-        gd3.setShape(GradientDrawable.OVAL);
-        gd3.setStroke(2, Color.BLACK);
-        gd3.setColor(colourBackground);
-
-        img1 = findViewById(R.id.imageView1);
-        img2 = findViewById(R.id.imageView2);
-        img3 = findViewById(R.id.imageView3);
-
-        img1.setImageDrawable(gd1);
-        img2.setImageDrawable(gd2);
-        img3.setImageDrawable(gd3);
+        imageAccent = findViewById(R.id.imageAccent);
+        imageFont = findViewById(R.id.imageFont);
+        imageBackground = findViewById(R.id.imageBackground);
 
         applyColours();
     }
@@ -86,6 +68,7 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
     }
 
     private void applyColours() {
+        //TODO: Make applying colours more efficient, remove SDK check, clean up themes
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -99,13 +82,22 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable((preferences.getInt("colourPrimary", 0))));
             getSupportActionBar().setTitle("Settings");
         }
+
         findViewById(R.id.constraintLayout).setBackgroundColor(preferences.getInt("colourBackground", 0));
 
-        findViewById(R.id.button1).getBackground().setColorFilter((preferences.getInt("colourPrimary", 0)), PorterDuff.Mode.SRC_ATOP);
-        findViewById(R.id.button2).getBackground().setColorFilter((preferences.getInt("colourPrimary", 0)), PorterDuff.Mode.SRC_ATOP);
-        findViewById(R.id.button3).getBackground().setColorFilter((preferences.getInt("colourPrimary", 0)), PorterDuff.Mode.SRC_ATOP);
-        findViewById(R.id.button4).getBackground().setColorFilter((preferences.getInt("colourPrimary", 0)), PorterDuff.Mode.SRC_ATOP);
+        imageAccent.setColorFilter(colourPrimary);
+        imageFont.setColorFilter(colourFont);
+        imageBackground.setColorFilter(colourBackground);
 
+        imageAccent.getBackground().setColorFilter(colourPrimary, PorterDuff.Mode.SRC_ATOP);
+        imageFont.getBackground().setColorFilter(colourPrimary, PorterDuff.Mode.SRC_ATOP);
+        imageBackground.getBackground().setColorFilter(colourPrimary, PorterDuff.Mode.SRC_ATOP);
+
+        ((TextView) findViewById(R.id.textAccent)).setTextColor(colourFont);
+        ((TextView) findViewById(R.id.textFont)).setTextColor(colourFont);
+        ((TextView) findViewById(R.id.textFont)).setTextColor(colourFont);
+
+        findViewById(R.id.buttonApply).getBackground().setColorFilter((preferences.getInt("colourPrimary", 0)), PorterDuff.Mode.SRC_ATOP);
     }
 
     public void showPicker1(View view) {
@@ -127,32 +119,38 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
     public void onColorSelection(DialogFragment dialogFragment, @ColorInt int selectedColor) {
 
         int tag = Integer.valueOf(dialogFragment.getTag());
+
+        /*
         GradientDrawable gd = new GradientDrawable();
         gd.setShape(GradientDrawable.OVAL);
         gd.setColor(selectedColor);
-        switch (tag) {
+        */
 
+        switch (tag) {
             case 1:
-                img1.setImageDrawable(gd);
+                //imageAccent.setImageDrawable(gd);
+                imageAccent.setColorFilter(selectedColor);
                 if (Color.alpha(selectedColor) != 255) {
                     Toast t = Toast.makeText(getApplicationContext(), "App bar colour cannot have any transparency", Toast.LENGTH_LONG);
                     TextView tv = t.getView().findViewById(android.R.id.message);
-                    if( tv != null) {
+                    if (tv != null) {
                         tv.setGravity(Gravity.CENTER);
                     }
                     t.show();
                 }
                 colourPrimary = ColorUtils.setAlphaComponent(selectedColor, 255);
-                gd.setColor(colourPrimary);
+                //gd.setColor(colourPrimary);
                 break;
 
             case 2:
-                img2.setImageDrawable(gd);
+                //imageFont.setImageDrawable(gd);
+                imageFont.setColorFilter(selectedColor);
                 colourFont = selectedColor;
                 break;
 
             case 3:
-                img3.setImageDrawable(gd);
+                //imageBackground.setImageDrawable(gd);
+                imageBackground.setColorFilter(selectedColor);
                 colourBackground = selectedColor;
                 break;
         }
