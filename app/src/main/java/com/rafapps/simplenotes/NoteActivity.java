@@ -63,10 +63,11 @@ public class NoteActivity extends AppCompatActivity {
             if ("text/plain".equals(type)) {
                 String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
                 noteText.setText(sharedText);
+                note = sharedText;
+                title = "";
             }
         } else { // If activity started from notes list
             title = intent.getStringExtra("noteTitle");
-
             if (title == null) {
                 title = "";
                 note = "";
@@ -160,7 +161,7 @@ public class NoteActivity extends AppCompatActivity {
                 sendIntent.setAction(Intent.ACTION_SEND);
                 sendIntent.putExtra(Intent.EXTRA_TEXT, noteText.getText().toString());
                 sendIntent.setType("text/plain");
-                startActivity(sendIntent);
+                startActivity(Intent.createChooser(sendIntent, "Share to:"));
                 return (true);
 
             case R.id.deleteButton:
