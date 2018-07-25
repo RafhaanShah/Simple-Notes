@@ -125,7 +125,7 @@ public class NoteActivity extends AppCompatActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(HelperUtils.darkenColor(preferences.getInt("colourPrimary", 0), 0.2));
             ActivityManager.TaskDescription tDesc = new ActivityManager.TaskDescription("Simple Notes",
-                    BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher), preferences.getInt("colourPrimary", 0));
+                    BitmapFactory.decodeResource(getResources(), R.drawable.ic_note), preferences.getInt("colourPrimary", 0));
             setTaskDescription(tDesc);
             noteText.setBackgroundTintList(ColorStateList.valueOf(preferences.getInt("colourPrimary", 0)));
             titleText.setBackgroundTintList(ColorStateList.valueOf(preferences.getInt("colourPrimary", 0)));
