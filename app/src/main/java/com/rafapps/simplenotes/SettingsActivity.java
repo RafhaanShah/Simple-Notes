@@ -78,6 +78,12 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
         applyColours();
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
     private void applyColours() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
