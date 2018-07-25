@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
@@ -100,10 +101,10 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
         }
         findViewById(R.id.constraintLayout).setBackgroundColor(preferences.getInt("colourBackground", 0));
 
-        findViewById(R.id.button1).setBackgroundColor(preferences.getInt("colourPrimary", 0));
-        findViewById(R.id.button2).setBackgroundColor(preferences.getInt("colourPrimary", 0));
-        findViewById(R.id.button3).setBackgroundColor(preferences.getInt("colourPrimary", 0));
-        findViewById(R.id.button4).setBackgroundColor(preferences.getInt("colourPrimary", 0));
+        findViewById(R.id.button1).getBackground().setColorFilter((preferences.getInt("colourPrimary", 0)), PorterDuff.Mode.SRC_ATOP);
+        findViewById(R.id.button2).getBackground().setColorFilter((preferences.getInt("colourPrimary", 0)), PorterDuff.Mode.SRC_ATOP);
+        findViewById(R.id.button3).getBackground().setColorFilter((preferences.getInt("colourPrimary", 0)), PorterDuff.Mode.SRC_ATOP);
+        findViewById(R.id.button4).getBackground().setColorFilter((preferences.getInt("colourPrimary", 0)), PorterDuff.Mode.SRC_ATOP);
 
     }
 
