@@ -37,6 +37,7 @@ public class NoteActivity extends AppCompatActivity {
     private String title;
     private String note;
     private SharedPreferences preferences;
+    private AlertDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +100,9 @@ public class NoteActivity extends AppCompatActivity {
             Log.v("verbose", "NO CONFIG CHANGE");
             saveFile();
         }
+        if (dialog != null && dialog.isShowing())
+            dialog.dismiss();
+        dialog = null;
         super.onPause();
     }
 
@@ -160,7 +164,7 @@ public class NoteActivity extends AppCompatActivity {
                 return (true);
 
             case R.id.deleteButton:
-                AlertDialog ad = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                dialog = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
                         .setTitle("Confirm Delete")
                         .setMessage("Are you sure you want to delete this note?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -176,11 +180,11 @@ public class NoteActivity extends AppCompatActivity {
                         })
                         .setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_delete_white_24dp))
                         .show();
-                if (ad.getWindow() != null) {
-                    ad.getWindow().getDecorView().setBackgroundColor(preferences.getInt("colourPrimary", 0));
+                if (dialog.getWindow() != null) {
+                    dialog.getWindow().getDecorView().setBackgroundColor(preferences.getInt("colourPrimary", 0));
                 }
-                ad.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(Color.WHITE);
-                ad.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(Color.WHITE);
+                dialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(Color.WHITE);
+                dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(Color.WHITE);
                 return (true);
         }
         return (super.onOptionsItemSelected(item));
