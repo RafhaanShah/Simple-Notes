@@ -42,13 +42,13 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme_NoActionBar);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notes_list);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
-
         getFiles();
 
         fab = findViewById(R.id.fab);
@@ -68,7 +68,6 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
 
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     fab.show();
                 }

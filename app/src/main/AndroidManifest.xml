@@ -12,7 +12,6 @@
 
         <activity
             android:name=".NoteActivity"
-            android:label="@string/app_name"
             android:parentActivityName=".NotesListActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -24,8 +23,7 @@
 
         <activity
             android:name=".NotesListActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
