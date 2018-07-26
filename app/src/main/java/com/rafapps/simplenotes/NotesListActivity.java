@@ -170,11 +170,13 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
             }
         }
 
-        // TODO: Check this block
+        /*
         recyclerView.setLayoutManager(new LinearLayoutManager(NotesListActivity.this));
         notesListAdapter = new NotesListAdapter(filteredList.toArray(new String[0]), filteredList2.toArray(new Long[0]));
         recyclerView.setAdapter(notesListAdapter);
         notesListAdapter.notifyDataSetChanged();
+        */
+        notesListAdapter.updateDataList(filteredList.toArray(new String[0]), filteredList2.toArray(new Long[0]));
 
         return true;
     }
