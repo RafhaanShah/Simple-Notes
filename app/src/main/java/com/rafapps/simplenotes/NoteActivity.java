@@ -3,6 +3,7 @@ package com.rafapps.simplenotes;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -122,8 +123,10 @@ public class NoteActivity extends AppCompatActivity {
 
     private void applyColours() {
         HelperUtils.applyColours(NoteActivity.this, colourPrimary);
-//       noteText.setBackgroundTintList(ColorStateList.valueOf(colourPrimary));
-//       titleText.setBackgroundTintList(ColorStateList.valueOf(colourPrimary));
+
+        // Set text field underline colour
+        noteText.setBackgroundTintList(ColorStateList.valueOf(colourPrimary));
+        titleText.setBackgroundTintList(ColorStateList.valueOf(colourPrimary));
 
         // Set actionbar and background colour
         findViewById(R.id.toolbar).setBackgroundColor(colourPrimary);

@@ -5,7 +5,7 @@ android {
     buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "com.rafapps.simplenotes"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 27
         versionCode 6
         versionName "2.0"
