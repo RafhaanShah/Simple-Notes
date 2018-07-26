@@ -1,13 +1,10 @@
 package com.rafapps.simplenotes;
 
-import android.app.ActivityManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.ColorInt;
@@ -16,9 +13,8 @@ import android.support.v4.graphics.ColorUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,17 +25,13 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
     private ImageView imageAccent;
     private ImageView imageFont;
     private ImageView imageBackground;
-
     private SharedPreferences preferences;
 
-    private
-    @ColorInt
+    private @ColorInt
     int colourPrimary;
-    private
-    @ColorInt
+    private @ColorInt
     int colourFont;
-    private
-    @ColorInt
+    private @ColorInt
     int colourBackground;
 
 
@@ -48,16 +40,12 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        colourPrimary = preferences.getInt("colourPrimary", 0);
-        colourFont = preferences.getInt("colourFont", 0);
-        colourBackground = preferences.getInt("colourBackground", 0);
-
+        preferences = PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this);
         imageAccent = findViewById(R.id.imageAccent);
         imageFont = findViewById(R.id.imageFont);
         imageBackground = findViewById(R.id.imageBackground);
 
+        getColours(preferences);
         applyColours();
     }
 
@@ -69,50 +57,56 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
 
     private void applyColours() {
         //TODO: Make applying colours more efficient, remove SDK check, clean up themes
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(HelperUtils.darkenColor(preferences.getInt("colourPrimary", 0), 0.2));
-            ActivityManager.TaskDescription tDesc = new ActivityManager.TaskDescription("Simple Notes",
-                    BitmapFactory.decodeResource(getResources(), R.drawable.ic_note), preferences.getInt("colourPrimary", 0));
-            setTaskDescription(tDesc);
-            window.setNavigationBarColor(preferences.getInt("colourPrimary", 0));
-        }
+        HelperUtils.applyColours(SettingsActivity.this, colourPrimary);
+
+        // Set action bar colour
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setBackgroundDrawable(new ColorDrawable((preferences.getInt("colourPrimary", 0))));
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(colourPrimary));
             getSupportActionBar().setTitle("Settings");
         }
 
-        findViewById(R.id.constraintLayout).setBackgroundColor(preferences.getInt("colourBackground", 0));
+        // Set background colour
+        findViewById(R.id.constraintLayout).setBackgroundColor(colourBackground);
 
+        // Set colour of indicator circles
         imageAccent.setColorFilter(colourPrimary);
         imageFont.setColorFilter(colourFont);
         imageBackground.setColorFilter(colourBackground);
 
+        // Set colour of the background of the circles
         imageAccent.getBackground().setColorFilter(colourPrimary, PorterDuff.Mode.SRC_ATOP);
         imageFont.getBackground().setColorFilter(colourPrimary, PorterDuff.Mode.SRC_ATOP);
         imageBackground.getBackground().setColorFilter(colourPrimary, PorterDuff.Mode.SRC_ATOP);
 
+        // Set font colours
         ((TextView) findViewById(R.id.textAccent)).setTextColor(colourFont);
         ((TextView) findViewById(R.id.textFont)).setTextColor(colourFont);
-        ((TextView) findViewById(R.id.textFont)).setTextColor(colourFont);
+        ((TextView) findViewById(R.id.textBackground)).setTextColor(colourFont);
 
-        findViewById(R.id.buttonApply).getBackground().setColorFilter((preferences.getInt("colourPrimary", 0)), PorterDuff.Mode.SRC_ATOP);
+        // Set divider and button colours
+        ((LinearLayout) findViewById(R.id.settingsLayout)).getDividerDrawable().setColorFilter(colourPrimary, PorterDuff.Mode.SRC_ATOP);
+        findViewById(R.id.buttonApply).getBackground().setColorFilter(colourPrimary, PorterDuff.Mode.SRC_ATOP);
+    }
+
+    private void getColours(SharedPreferences preferences) {
+        colourPrimary = preferences.getInt("colourPrimary", Color.parseColor("#ffc107"));
+        colourFont = preferences.getInt("colourFont", Color.parseColor("#000000"));
+        colourBackground = preferences.getInt("colourBackground", Color.parseColor("#FFFFFF"));
     }
 
     public void showPicker1(View view) {
-        colorDialog.setPickerColor(this, 1, colourPrimary);
-        colorDialog.showColorPicker(this, 1);
+        colorDialog.setPickerColor(SettingsActivity.this, 1, colourPrimary);
+        colorDialog.showColorPicker(SettingsActivity.this, 1);
     }
 
     public void showPicker2(View view) {
-        colorDialog.setPickerColor(this, 2, colourFont);
-        colorDialog.showColorPicker(this, 2);
+        colorDialog.setPickerColor(SettingsActivity.this, 2, colourFont);
+        colorDialog.showColorPicker(SettingsActivity.this, 2);
     }
 
     public void showPicker3(View view) {
-        colorDialog.setPickerColor(this, 3, colourBackground);
-        colorDialog.showColorPicker(this, 3);
+        colorDialog.setPickerColor(SettingsActivity.this, 3, colourBackground);
+        colorDialog.showColorPicker(SettingsActivity.this, 3);
     }
 
     @Override
@@ -157,17 +151,15 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
     }
 
     public void saveColours(View view) {
-
         SharedPreferences.Editor editor = preferences.edit();
         editor.putInt("colourPrimary", colourPrimary);
         editor.putInt("colourFont", colourFont);
         editor.putInt("colourBackground", colourBackground);
         editor.apply();
 
-        Intent nextScreen = new Intent(this, NotesListActivity.class);
+        Intent nextScreen = new Intent(SettingsActivity.this, NotesListActivity.class);
         nextScreen.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(nextScreen);
         finish();
-
     }
 }

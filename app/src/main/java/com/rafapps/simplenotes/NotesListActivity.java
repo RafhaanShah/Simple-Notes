@@ -1,24 +1,22 @@
 package com.rafapps.simplenotes;
 
-import android.app.ActivityManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.ColorInt;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
@@ -38,7 +36,13 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
     private TextView emptyText;
     private NotesListAdapter notesListAdapter;
     private FloatingActionButton fab;
-    private SharedPreferences preferences;
+
+    private @ColorInt
+    int colourPrimary;
+    private @ColorInt
+    int colourFont;
+    private @ColorInt
+    int colourBackground;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,18 +52,18 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
         getFiles();
 
         fab = findViewById(R.id.fab);
         emptyText = findViewById(R.id.emptyText);
         recyclerView = findViewById(R.id.recyclerView);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(NotesListActivity.this);
         recyclerView.setLayoutManager(linearLayoutManager);
 
         notesListAdapter = new NotesListAdapter(filesList, datesList);
         recyclerView.setAdapter(notesListAdapter);
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 if (dy > 0 || dy < 0 && fab.isShown())
@@ -75,44 +79,34 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
             }
         });
 
+        getColours(PreferenceManager.getDefaultSharedPreferences(NotesListActivity.this));
         applyColours();
     }
 
     private void applyColours() {
-        checkColours();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(HelperUtils.darkenColor(preferences.getInt("colourPrimary", 0), 0.2));
-            ActivityManager.TaskDescription tDesc = new ActivityManager.TaskDescription("Simple Notes",
-                    BitmapFactory.decodeResource(getResources(), R.drawable.ic_note), preferences.getInt("colourPrimary", 0));
-            setTaskDescription(tDesc);
-            window.setNavigationBarColor(preferences.getInt("colourPrimary", 0));
-        }
-
-        findViewById(R.id.toolbar).setBackgroundColor(preferences.getInt("colourPrimary", 0));
-        findViewById(R.id.constraintLayout).setBackgroundColor(preferences.getInt("colourBackground", 0));
-        emptyText.setTextColor(preferences.getInt("colourFont", 0));
-        fab.setBackgroundTintList(ColorStateList.valueOf(preferences.getInt("colourPrimary", 0)));
+        HelperUtils.applyColours(NotesListActivity.this, colourPrimary);
+        findViewById(R.id.toolbar).setBackgroundColor(colourPrimary);
+        findViewById(R.id.constraintLayout).setBackgroundColor(colourBackground);
+        emptyText.setTextColor(colourFont);
+        fab.setBackgroundTintList(ColorStateList.valueOf(colourPrimary));
     }
 
-    private void checkColours() {
-        if (preferences.getInt("colourPrimary", 0) == 0) {
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putInt("colourPrimary", Color.parseColor("#ffc107"));
-            editor.putInt("colourFont", Color.parseColor("#000000"));
-            editor.putInt("colourBackground", Color.parseColor("#FFFFFF"));
-            editor.apply();
-        }
+    private void getColours(SharedPreferences preferences) {
+        colourPrimary = preferences.getInt("colourPrimary", Color.parseColor("#ffc107"));
+        colourFont = preferences.getInt("colourFont", Color.parseColor("#000000"));
+        colourBackground = preferences.getInt("colourBackground", Color.parseColor("#FFFFFF"));
     }
 
     @Override
     public void onResume() {
         super.onResume();
+
+        // Hide keyboard
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
         );
 
+        // Close search
         SearchView searchView = findViewById(R.id.searchButton);
         if (searchView != null) {
             if (!searchView.isIconified()) {
@@ -120,10 +114,12 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
             }
         }
 
+        // Update the list
         getFiles();
         notesListAdapter.updateDataList(filesList, datesList);
         //recyclerView.invalidate();
 
+        // If the list is empty, show message
         if (notesListAdapter.getItemCount() == 0) {
             emptyText.setVisibility(View.VISIBLE);
         } else if (emptyText.getVisibility() == View.VISIBLE) {
@@ -137,13 +133,11 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_notes_list, menu);
-
         final MenuItem searchItem = menu.findItem(R.id.searchButton);
         final SearchView searchView = (SearchView) searchItem.getActionView();
-        searchView.setOnQueryTextListener(this);
+        searchView.setOnQueryTextListener(NotesListActivity.this);
         searchView.setMaxWidth(Integer.MAX_VALUE);
         searchView.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
-
         return true;
     }
 
@@ -164,7 +158,6 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
     @Override
     public boolean onQueryTextChange(String query) {
         query = query.toLowerCase();
-
         final List<String> filteredList = new ArrayList<>();
         final List<Long> filteredList2 = new ArrayList<>();
 
@@ -177,7 +170,7 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
             }
         }
 
-
+        // TODO: Check this block
         recyclerView.setLayoutManager(new LinearLayoutManager(NotesListActivity.this));
         notesListAdapter = new NotesListAdapter(filteredList.toArray(new String[0]), filteredList2.toArray(new Long[0]));
         recyclerView.setAdapter(notesListAdapter);
@@ -201,6 +194,7 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
         File[] files = getFilesDir().listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
+                Log.v("verbose", name);
                 return name.toLowerCase().endsWith(".txt");
             }
         });
@@ -223,7 +217,6 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
     @Override
     public void onBackPressed() {
         SearchView searchView = findViewById(R.id.searchButton);
-
         if (!searchView.isIconified()) {
             searchView.onActionViewCollapsed();
         } else {

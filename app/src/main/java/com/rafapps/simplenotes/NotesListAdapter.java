@@ -1,6 +1,7 @@
 package com.rafapps.simplenotes;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -26,8 +27,8 @@ class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder>
             super(v);
             noteTitle = v.findViewById(R.id.noteTitle);
             noteDate = v.findViewById(R.id.noteDate);
-            noteTitle.setTextColor(PreferenceManager.getDefaultSharedPreferences(itemView.getContext()).getInt("colourFont", 0));
-            noteDate.setTextColor(PreferenceManager.getDefaultSharedPreferences(itemView.getContext()).getInt("colourFont", 0));
+            noteTitle.setTextColor(PreferenceManager.getDefaultSharedPreferences(itemView.getContext()).getInt("colourFont", Color.parseColor("#000000")));
+            noteDate.setTextColor(PreferenceManager.getDefaultSharedPreferences(itemView.getContext()).getInt("colourFont", Color.parseColor("#000000")));
             v.setOnClickListener(this);
         }
 

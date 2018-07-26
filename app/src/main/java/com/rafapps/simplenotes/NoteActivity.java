@@ -1,15 +1,12 @@
 package com.rafapps.simplenotes;
 
-import android.app.ActivityManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.ColorInt;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v7.app.AlertDialog;
@@ -19,8 +16,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -36,8 +31,14 @@ public class NoteActivity extends AppCompatActivity {
     private EditText titleText;
     private String title;
     private String note;
-    private SharedPreferences preferences;
     private AlertDialog dialog;
+
+    private @ColorInt
+    int colourPrimary;
+    private @ColorInt
+    int colourFont;
+    private @ColorInt
+    int colourBackground;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +85,7 @@ public class NoteActivity extends AppCompatActivity {
         Log.v("verbose", "OPENED TITLE " + title);
         Log.v("verbose", "OPENED NOTE " + note);
 
+        getColours(PreferenceManager.getDefaultSharedPreferences(NoteActivity.this));
         applyColours();
     }
 
@@ -119,27 +121,27 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     private void applyColours() {
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(HelperUtils.darkenColor(preferences.getInt("colourPrimary", 0), 0.2));
-            ActivityManager.TaskDescription tDesc = new ActivityManager.TaskDescription("Simple Notes",
-                    BitmapFactory.decodeResource(getResources(), R.drawable.ic_note), preferences.getInt("colourPrimary", 0));
-            setTaskDescription(tDesc);
-            noteText.setBackgroundTintList(ColorStateList.valueOf(preferences.getInt("colourPrimary", 0)));
-            titleText.setBackgroundTintList(ColorStateList.valueOf(preferences.getInt("colourPrimary", 0)));
-            window.setNavigationBarColor(preferences.getInt("colourPrimary", 0));
-        }
+        HelperUtils.applyColours(NoteActivity.this, colourPrimary);
+//       noteText.setBackgroundTintList(ColorStateList.valueOf(colourPrimary));
+//       titleText.setBackgroundTintList(ColorStateList.valueOf(colourPrimary));
 
-        findViewById(R.id.toolbar).setBackgroundColor(preferences.getInt("colourPrimary", 0));
-        findViewById(R.id.scrollView).setBackgroundColor(preferences.getInt("colourBackground", 0));
+        // Set actionbar and background colour
+        findViewById(R.id.toolbar).setBackgroundColor(colourPrimary);
+        findViewById(R.id.scrollView).setBackgroundColor(colourBackground);
 
-        titleText.setTextColor(preferences.getInt("colourFont", 0));
-        noteText.setTextColor(preferences.getInt("colourFont", 0));
+        // Set font colours
+        titleText.setTextColor(colourFont);
+        noteText.setTextColor(colourFont);
 
-        titleText.setHintTextColor(ColorUtils.setAlphaComponent(preferences.getInt("colourFont", 0), 120));
-        noteText.setHintTextColor(ColorUtils.setAlphaComponent(preferences.getInt("colourFont", 0), 120));
+        // Set hint colours
+        titleText.setHintTextColor(ColorUtils.setAlphaComponent(colourFont, 120));
+        noteText.setHintTextColor(ColorUtils.setAlphaComponent(colourFont, 120));
+    }
+
+    private void getColours(SharedPreferences preferences) {
+        colourPrimary = preferences.getInt("colourPrimary", Color.parseColor("#ffc107"));
+        colourFont = preferences.getInt("colourFont", Color.parseColor("#000000"));
+        colourBackground = preferences.getInt("colourBackground", Color.parseColor("#FFFFFF"));
     }
 
     @Override
@@ -165,12 +167,18 @@ public class NoteActivity extends AppCompatActivity {
                 return (true);
 
             case R.id.deleteButton:
-                dialog = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                dialog = new AlertDialog.Builder(NoteActivity.this, R.style.AlertDialogTheme)
                         .setTitle("Confirm Delete")
                         .setMessage("Are you sure you want to delete this note?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                deleteFile(title + ".txt");
+                                if (fileExists(title)) {
+                                    deleteFile(title + ".txt");
+                                }
+                                title = "";
+                                note = "";
+                                titleText.setText(title);
+                                noteText.setText(note);
                                 finish();
                             }
                         })
@@ -182,7 +190,7 @@ public class NoteActivity extends AppCompatActivity {
                         .setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_delete_white_24dp))
                         .show();
                 if (dialog.getWindow() != null) {
-                    dialog.getWindow().getDecorView().setBackgroundColor(preferences.getInt("colourPrimary", 0));
+                    dialog.getWindow().getDecorView().setBackgroundColor(colourPrimary);
                 }
                 dialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(Color.WHITE);
                 dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(Color.WHITE);
@@ -257,7 +265,7 @@ public class NoteActivity extends AppCompatActivity {
             out.write(fileContent);
             out.close();
         } catch (Throwable t) {
-            Toast.makeText(this, "Exception: " + t.toString(), Toast.LENGTH_LONG).show();
+            Toast.makeText(NoteActivity.this, "Exception: " + t.toString(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -283,7 +291,7 @@ public class NoteActivity extends AppCompatActivity {
                     content = buf.toString();
                 }
             } catch (Exception e) {
-                Toast.makeText(this, "Exception: " + e.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(NoteActivity.this, "Exception: " + e.toString(), Toast.LENGTH_LONG).show();
             }
         }
         return content.trim();
