@@ -12,8 +12,7 @@
 
         <activity
             android:name=".NoteActivity"
-            android:parentActivityName=".NotesListActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:parentActivityName=".NotesListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -26,7 +25,6 @@
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -35,5 +33,4 @@
             android:name=".SettingsActivity"
             android:parentActivityName=".NotesListActivity" />
     </application>
-
 </manifest>

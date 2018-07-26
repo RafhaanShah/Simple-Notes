@@ -34,7 +34,6 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
     private @ColorInt
     int colourBackground;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.ColorInt;
@@ -12,7 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,7 +32,6 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
 
     private String[] filesList;
     private Long[] datesList;
-    private RecyclerView recyclerView;
     private TextView emptyText;
     private NotesListAdapter notesListAdapter;
     private FloatingActionButton fab;
@@ -46,17 +45,15 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.AppTheme_NoActionBar);
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notes_list);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         getFiles();
 
         fab = findViewById(R.id.fab);
         emptyText = findViewById(R.id.emptyText);
-        recyclerView = findViewById(R.id.recyclerView);
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(NotesListActivity.this);
         recyclerView.setLayoutManager(linearLayoutManager);
 
@@ -85,10 +82,11 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
 
     private void applyColours() {
         HelperUtils.applyColours(NotesListActivity.this, colourPrimary);
-        findViewById(R.id.toolbar).setBackgroundColor(colourPrimary);
-        findViewById(R.id.constraintLayout).setBackgroundColor(colourBackground);
+        findViewById(R.id.coordinatorLayout).setBackgroundColor(colourBackground);
         emptyText.setTextColor(colourFont);
         fab.setBackgroundTintList(ColorStateList.valueOf(colourPrimary));
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(colourPrimary));
     }
 
     private void getColours(SharedPreferences preferences) {

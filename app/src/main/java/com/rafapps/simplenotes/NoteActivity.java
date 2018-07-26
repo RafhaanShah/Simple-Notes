@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.ColorInt;
@@ -12,7 +13,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -44,15 +44,7 @@ public class NoteActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
-
+        setContentView(R.layout.activity_note);
         titleText = findViewById(R.id.titleText);
         noteText = findViewById(R.id.editText);
 
@@ -74,12 +66,14 @@ public class NoteActivity extends AppCompatActivity {
                 title = "";
                 note = "";
                 noteText.requestFocus();
-                getSupportActionBar().setTitle("New Note");
+                if (getSupportActionBar() != null)
+                    getSupportActionBar().setTitle("New Note");
             } else {
                 titleText.setText(title);
                 note = openFile(title);
                 noteText.setText(note);
-                getSupportActionBar().setTitle(title);
+                if (getSupportActionBar() != null)
+                    getSupportActionBar().setTitle(title);
             }
         }
 
@@ -129,8 +123,9 @@ public class NoteActivity extends AppCompatActivity {
         titleText.setBackgroundTintList(ColorStateList.valueOf(colourPrimary));
 
         // Set actionbar and background colour
-        findViewById(R.id.toolbar).setBackgroundColor(colourPrimary);
         findViewById(R.id.scrollView).setBackgroundColor(colourBackground);
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(colourPrimary));
 
         // Set font colours
         titleText.setTextColor(colourFont);
@@ -299,5 +294,4 @@ public class NoteActivity extends AppCompatActivity {
         }
         return content.trim();
     }
-
 }
