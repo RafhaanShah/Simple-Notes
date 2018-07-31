@@ -9,11 +9,11 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.ColorInt;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,6 +35,7 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
     private TextView emptyText;
     private NotesListAdapter notesListAdapter;
     private FloatingActionButton fab;
+    private boolean colourNavbar;
 
     private @ColorInt
     int colourPrimary;
@@ -76,12 +77,12 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
             }
         });
 
-        getColours(PreferenceManager.getDefaultSharedPreferences(NotesListActivity.this));
-        applyColours();
+        getSettings(PreferenceManager.getDefaultSharedPreferences(NotesListActivity.this));
+        applySettings();
     }
 
-    private void applyColours() {
-        HelperUtils.applyColours(NotesListActivity.this, colourPrimary);
+    private void applySettings() {
+        HelperUtils.applyColours(NotesListActivity.this, colourPrimary, colourNavbar);
         findViewById(R.id.coordinatorLayout).setBackgroundColor(colourBackground);
         emptyText.setTextColor(colourFont);
         fab.setBackgroundTintList(ColorStateList.valueOf(colourPrimary));
@@ -89,10 +90,11 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(colourPrimary));
     }
 
-    private void getColours(SharedPreferences preferences) {
-        colourPrimary = preferences.getInt("colourPrimary", Color.parseColor("#ffc107"));
-        colourFont = preferences.getInt("colourFont", Color.parseColor("#000000"));
-        colourBackground = preferences.getInt("colourBackground", Color.parseColor("#FFFFFF"));
+    private void getSettings(SharedPreferences preferences) {
+        colourPrimary = preferences.getInt("colourPrimary", ContextCompat.getColor(NotesListActivity.this, R.color.colorPrimary));
+        colourFont = preferences.getInt("colourFont", Color.BLACK);
+        colourBackground = preferences.getInt("colourBackground", Color.WHITE);
+        colourNavbar = preferences.getBoolean("colourNavbar", false);
     }
 
     @Override
@@ -168,12 +170,6 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
             }
         }
 
-        /*
-        recyclerView.setLayoutManager(new LinearLayoutManager(NotesListActivity.this));
-        notesListAdapter = new NotesListAdapter(filteredList.toArray(new String[0]), filteredList2.toArray(new Long[0]));
-        recyclerView.setAdapter(notesListAdapter);
-        notesListAdapter.notifyDataSetChanged();
-        */
         notesListAdapter.updateDataList(filteredList.toArray(new String[0]), filteredList2.toArray(new Long[0]));
 
         return true;
@@ -194,7 +190,6 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
         File[] files = getFilesDir().listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                Log.v("verbose", name);
                 return name.toLowerCase().endsWith(".txt");
             }
         });

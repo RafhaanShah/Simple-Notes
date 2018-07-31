@@ -2,6 +2,7 @@ package com.rafapps.simplenotes;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
@@ -9,10 +10,13 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.ColorInt;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
+import android.support.v4.widget.CompoundButtonCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -25,6 +29,8 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
     private ImageView imageAccent;
     private ImageView imageFont;
     private ImageView imageBackground;
+    private CheckBox navBox;
+    private boolean colourNavbar;
     private SharedPreferences preferences;
 
     private @ColorInt
@@ -44,8 +50,8 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
         imageFont = findViewById(R.id.imageFont);
         imageBackground = findViewById(R.id.imageBackground);
 
-        getColours(preferences);
-        applyColours();
+        getSettings(preferences);
+        applySettings();
     }
 
     @Override
@@ -54,9 +60,8 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
         return true;
     }
 
-    private void applyColours() {
-        //TODO: Make applying colours more efficient, remove SDK check, clean up themes
-        HelperUtils.applyColours(SettingsActivity.this, colourPrimary);
+    private void applySettings() {
+        HelperUtils.applyColours(SettingsActivity.this, colourPrimary, colourNavbar);
 
         // Set action bar colour
         if (getSupportActionBar() != null) {
@@ -81,16 +86,23 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
         ((TextView) findViewById(R.id.textAccent)).setTextColor(colourFont);
         ((TextView) findViewById(R.id.textFont)).setTextColor(colourFont);
         ((TextView) findViewById(R.id.textBackground)).setTextColor(colourFont);
+        ((TextView) findViewById(R.id.textSwitch)).setTextColor(colourFont);
 
         // Set divider and button colours
         ((LinearLayout) findViewById(R.id.settingsLayout)).getDividerDrawable().setColorFilter(colourPrimary, PorterDuff.Mode.SRC_ATOP);
         findViewById(R.id.buttonApply).getBackground().setColorFilter(colourPrimary, PorterDuff.Mode.SRC_ATOP);
+
+        // Set switch setting
+        navBox = findViewById(R.id.boxNavigation);
+        navBox.setChecked(colourNavbar);
+        CompoundButtonCompat.setButtonTintList(navBox, ColorStateList.valueOf(colourPrimary));
     }
 
-    private void getColours(SharedPreferences preferences) {
-        colourPrimary = preferences.getInt("colourPrimary", Color.parseColor("#ffc107"));
-        colourFont = preferences.getInt("colourFont", Color.parseColor("#000000"));
-        colourBackground = preferences.getInt("colourBackground", Color.parseColor("#FFFFFF"));
+    private void getSettings(SharedPreferences preferences) {
+        colourPrimary = preferences.getInt("colourPrimary", ContextCompat.getColor(SettingsActivity.this, R.color.colorPrimary));
+        colourFont = preferences.getInt("colourFont", Color.BLACK);
+        colourBackground = preferences.getInt("colourBackground", Color.WHITE);
+        colourNavbar = preferences.getBoolean("colourNavbar", false);
     }
 
     public void showPicker1(View view) {
@@ -108,20 +120,17 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
         colorDialog.showColorPicker(SettingsActivity.this, 3);
     }
 
+    public void toggleCheckBox(View view) {
+        navBox.toggle();
+    }
+
     @Override
     public void onColorSelection(DialogFragment dialogFragment, @ColorInt int selectedColor) {
 
         int tag = Integer.valueOf(dialogFragment.getTag());
 
-        /*
-        GradientDrawable gd = new GradientDrawable();
-        gd.setShape(GradientDrawable.OVAL);
-        gd.setColor(selectedColor);
-        */
-
         switch (tag) {
             case 1:
-                //imageAccent.setImageDrawable(gd);
                 imageAccent.setColorFilter(selectedColor);
                 if (Color.alpha(selectedColor) != 255) {
                     Toast t = Toast.makeText(getApplicationContext(), "App bar colour cannot have any transparency", Toast.LENGTH_LONG);
@@ -132,28 +141,26 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
                     t.show();
                 }
                 colourPrimary = ColorUtils.setAlphaComponent(selectedColor, 255);
-                //gd.setColor(colourPrimary);
                 break;
 
             case 2:
-                //imageFont.setImageDrawable(gd);
                 imageFont.setColorFilter(selectedColor);
                 colourFont = selectedColor;
                 break;
 
             case 3:
-                //imageBackground.setImageDrawable(gd);
                 imageBackground.setColorFilter(selectedColor);
                 colourBackground = selectedColor;
                 break;
         }
     }
 
-    public void saveColours(View view) {
+    public void saveSettings(View view) {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putInt("colourPrimary", colourPrimary);
         editor.putInt("colourFont", colourFont);
         editor.putInt("colourBackground", colourBackground);
+        editor.putBoolean("colourNavbar", navBox.isChecked());
         editor.apply();
 
         Intent nextScreen = new Intent(SettingsActivity.this, NotesListActivity.class);

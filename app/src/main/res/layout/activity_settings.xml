@@ -47,8 +47,7 @@
             android:layout_height="60dp"
             android:gravity="center_vertical"
             android:onClick="showPicker2"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/layoutAccent">
+            android:orientation="horizontal">
 
             <ImageView
                 android:id="@+id/imageFont"
@@ -75,8 +74,7 @@
             android:layout_height="60dp"
             android:gravity="center_vertical"
             android:onClick="showPicker3"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/layoutFont">
+            android:orientation="horizontal">
 
             <ImageView
                 android:id="@+id/imageBackground"
@@ -96,6 +94,31 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/layoutSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:gravity="center_vertical"
+            android:onClick="toggleCheckBox"
+            android:orientation="horizontal">
+
+
+            <CheckBox
+                android:id="@+id/boxNavigation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="12dp" />
+
+            <TextView
+                android:id="@+id/textSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="Colour Navigation Bar"
+                android:textSize="16dp" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
     <Button
@@ -103,7 +126,7 @@
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="7dp"
-        android:onClick="saveColours"
+        android:onClick="saveSettings"
         android:text="Apply Changes"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"

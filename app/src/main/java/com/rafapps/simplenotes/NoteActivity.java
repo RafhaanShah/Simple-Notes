@@ -14,7 +14,6 @@ import android.support.v4.graphics.ColorUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -33,6 +32,7 @@ public class NoteActivity extends AppCompatActivity {
     private String title;
     private String note;
     private AlertDialog dialog;
+    private boolean colourNavbar;
 
     private @ColorInt
     int colourPrimary;
@@ -77,25 +77,21 @@ public class NoteActivity extends AppCompatActivity {
             }
         }
 
-        Log.v("verbose", "OPENED TITLE " + title);
-        Log.v("verbose", "OPENED NOTE " + note);
-
-        getColours(PreferenceManager.getDefaultSharedPreferences(NoteActivity.this));
-        applyColours();
+        getSettings(PreferenceManager.getDefaultSharedPreferences(NoteActivity.this));
+        applySettings();
     }
 
     @Override
     public void onRestart() {
         super.onRestart();
         note = noteText.getText().toString().trim();
-        Log.v("verbose", "RESTARTED");
+        if (getCurrentFocus() != null)
+            getCurrentFocus().clearFocus();
     }
 
     @Override
     public void onPause() {
-        Log.v("verbose", "PAUSE");
         if (!isChangingConfigurations()) {
-            Log.v("verbose", "NO CONFIG CHANGE");
             saveFile();
         }
         if (dialog != null && dialog.isShowing())
@@ -115,8 +111,8 @@ public class NoteActivity extends AppCompatActivity {
         return true;
     }
 
-    private void applyColours() {
-        HelperUtils.applyColours(NoteActivity.this, colourPrimary);
+    private void applySettings() {
+        HelperUtils.applyColours(NoteActivity.this, colourPrimary, colourNavbar);
 
         // Set text field underline colour
         noteText.setBackgroundTintList(ColorStateList.valueOf(colourPrimary));
@@ -136,10 +132,11 @@ public class NoteActivity extends AppCompatActivity {
         noteText.setHintTextColor(ColorUtils.setAlphaComponent(colourFont, 120));
     }
 
-    private void getColours(SharedPreferences preferences) {
-        colourPrimary = preferences.getInt("colourPrimary", Color.parseColor("#ffc107"));
-        colourFont = preferences.getInt("colourFont", Color.parseColor("#000000"));
-        colourBackground = preferences.getInt("colourBackground", Color.parseColor("#FFFFFF"));
+    private void getSettings(SharedPreferences preferences) {
+        colourPrimary = preferences.getInt("colourPrimary", ContextCompat.getColor(NoteActivity.this, R.color.colorPrimary));
+        colourFont = preferences.getInt("colourFont", Color.BLACK);
+        colourBackground = preferences.getInt("colourBackground", Color.WHITE);
+        colourNavbar = preferences.getBoolean("colourNavbar", false);
     }
 
     @Override
@@ -202,18 +199,13 @@ public class NoteActivity extends AppCompatActivity {
         String newTitle = titleText.getText().toString().trim().replace("/", " ");
         String newNote = noteText.getText().toString().trim();
 
-        Log.v("verbose", "NEW TITLE " + newTitle);
-        Log.v("verbose", "NEW TEXT " + newNote);
-
         // Check if title and note are empty
         if (TextUtils.isEmpty(newTitle) && TextUtils.isEmpty(newNote)) {
-            Log.v("verbose", "EMPTY TITLE AND NOTE");
             return;
         }
 
         // Check if title and note are unchanged
         if (newTitle.equals(title) && newNote.equals(note)) {
-            Log.v("verbose", "NOTHING CHANGED");
             return;
         }
 
@@ -221,7 +213,6 @@ public class NoteActivity extends AppCompatActivity {
         if (!title.equals(newTitle) || TextUtils.isEmpty(newTitle)) {
             newTitle = newFileName(newTitle);
             titleText.setText(newTitle);
-            Log.v("verbose", "SAVED FILE " + newTitle);
         }
 
         // Save the file with the new file name and content
@@ -229,7 +220,6 @@ public class NoteActivity extends AppCompatActivity {
 
         // If the title is not empty and the file name has changed then delete the old file
         if (!TextUtils.isEmpty(title) && !newTitle.equals(title)) {
-            Log.v("verbose", "DELETED FILE " + title);
             deleteFile(title + ".txt");
         }
 

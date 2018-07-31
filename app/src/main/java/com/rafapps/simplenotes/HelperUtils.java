@@ -24,12 +24,13 @@ public class HelperUtils {
         return (int) Math.max(color - (color * fraction), 0);
     }
 
-    public static void applyColours(Activity activity, int colourPrimary) {
+    public static void applyColours(Activity activity, int colourPrimary, boolean colourNavbar) {
         //Get the activity window
         Window window = activity.getWindow();
 
         // Draw over the navigation bar
-        //window.setNavigationBarColor(colourPrimary);
+        if (colourNavbar)
+            window.setNavigationBarColor(colourPrimary);
 
         // Colour the status bar
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
