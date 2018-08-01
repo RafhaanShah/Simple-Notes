@@ -9,6 +9,12 @@ import android.view.WindowManager;
 
 public class HelperUtils {
 
+    public static String TEXT_FILE_EXTENSION = ".txt";
+    public static String PREFERENCE_COLOUR_PRIMARY = "colourPrimary";
+    public static String PREFERENCE_COLOUR_FONT = "colourFont";
+    public static String PREFERENCE_COLOUR_BACKGROUND = "colourBackground";
+    public static String PREFERENCE_COLOUR_NAVBAR = "colourNavbar";
+
     public static int darkenColor(int color, double fraction) {
         int red = Color.red(color);
         int green = Color.green(color);
@@ -37,7 +43,7 @@ public class HelperUtils {
         window.setStatusBarColor(HelperUtils.darkenColor(colourPrimary, 0.2));
 
         // Set task description, colour and icon for the app switcher
-        activity.setTaskDescription(new ActivityManager.TaskDescription("Simple Notes",
+        activity.setTaskDescription(new ActivityManager.TaskDescription(activity.getString(R.string.app_name),
                 BitmapFactory.decodeResource(activity.getResources(), R.drawable.ic_note), colourPrimary));
     }
 }

@@ -2,7 +2,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/constraintLayout"
+    android:id="@+id/layout_constraint"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.rafapps.simplenotes.SettingsActivity">
@@ -16,7 +16,6 @@
         android:showDividers="middle|end">
 
         <LinearLayout
-            android:id="@+id/layoutAccent"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:gravity="center_vertical"
@@ -24,25 +23,25 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/imageAccent"
+                android:id="@+id/image_accent"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_margin="8dp"
                 android:background="@drawable/square"
+                android:contentDescription="@string/colour_indicator"
                 android:src="@drawable/ic_bg" />
 
             <TextView
-                android:id="@+id/textAccent"
+                android:id="@+id/tv_accent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:text="Accent Colour"
-                android:textSize="16dp" />
+                android:text="@string/accent_colour"
+                android:textSize="16sp" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/layoutFont"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:gravity="center_vertical"
@@ -50,26 +49,26 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/imageFont"
+                android:id="@+id/image_font"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_margin="8dp"
                 android:background="@drawable/square"
+                android:contentDescription="@string/colour_indicator"
                 android:src="@drawable/ic_bg" />
 
             <TextView
-                android:id="@+id/textFont"
+                android:id="@+id/tv_font"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:text="Font Colour"
-                android:textSize="16dp" />
+                android:text="@string/font_colour"
+                android:textSize="16sp" />
 
 
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/layoutBackground"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:gravity="center_vertical"
@@ -77,25 +76,25 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/imageBackground"
+                android:id="@+id/image_background"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_margin="8dp"
                 android:background="@drawable/square"
+                android:contentDescription="@string/colour_indicator"
                 android:src="@drawable/ic_bg" />
 
             <TextView
-                android:id="@+id/textBackground"
+                android:id="@+id/tv_background"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:text="Background Colour"
-                android:textSize="16dp" />
+                android:text="@string/background_colour"
+                android:textSize="16sp" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/layoutSwitch"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:gravity="center_vertical"
@@ -104,30 +103,30 @@
 
 
             <CheckBox
-                android:id="@+id/boxNavigation"
+                android:id="@+id/checkbox_navigationbar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="12dp" />
 
             <TextView
-                android:id="@+id/textSwitch"
+                android:id="@+id/tv_navigationbar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:text="Colour Navigation Bar"
-                android:textSize="16dp" />
+                android:text="@string/colour_navigation_bar"
+                android:textSize="16sp" />
 
         </LinearLayout>
 
     </LinearLayout>
 
     <Button
-        android:id="@+id/buttonApply"
+        android:id="@+id/btn_apply"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="7dp"
         android:onClick="saveSettings"
-        android:text="Apply Changes"
+        android:text="@string/apply_changes"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

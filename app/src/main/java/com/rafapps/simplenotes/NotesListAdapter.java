@@ -1,6 +1,5 @@
 package com.rafapps.simplenotes;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -25,18 +24,16 @@ class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder>
 
         ViewHolder(View v) {
             super(v);
-            noteTitle = v.findViewById(R.id.noteTitle);
-            noteDate = v.findViewById(R.id.noteDate);
-            noteTitle.setTextColor(PreferenceManager.getDefaultSharedPreferences(itemView.getContext()).getInt("colourFont", Color.parseColor("#000000")));
-            noteDate.setTextColor(PreferenceManager.getDefaultSharedPreferences(itemView.getContext()).getInt("colourFont", Color.parseColor("#000000")));
+            noteTitle = v.findViewById(R.id.tv_title);
+            noteDate = v.findViewById(R.id.tv_date);
+            noteTitle.setTextColor(PreferenceManager.getDefaultSharedPreferences(itemView.getContext()).getInt(HelperUtils.PREFERENCE_COLOUR_FONT, Color.BLACK));
+            noteDate.setTextColor(PreferenceManager.getDefaultSharedPreferences(itemView.getContext()).getInt(HelperUtils.PREFERENCE_COLOUR_FONT, Color.BLACK));
             v.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            Intent nextScreen = new Intent(itemView.getContext(), NoteActivity.class);
-            nextScreen.putExtra("noteTitle", stringTitle);
-            itemView.getContext().startActivity(nextScreen);
+            itemView.getContext().startActivity(NoteActivity.getStartIntent(itemView.getContext(), stringTitle));
         }
 
         void setData(String title, Long date) {

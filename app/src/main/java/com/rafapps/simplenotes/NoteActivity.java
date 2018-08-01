@@ -1,5 +1,6 @@
 package com.rafapps.simplenotes;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,6 +28,8 @@ import java.io.OutputStreamWriter;
 
 public class NoteActivity extends AppCompatActivity {
 
+    private static final String EXTRA_NOTE_TITLE = "EXTRA_NOTE_TITLE";
+
     private EditText noteText;
     private EditText titleText;
     private String title;
@@ -41,12 +44,18 @@ public class NoteActivity extends AppCompatActivity {
     private @ColorInt
     int colourBackground;
 
+    public static Intent getStartIntent(Context context, String title) {
+        Intent intent = new Intent(context, NotesListActivity.class);
+        intent.putExtra(EXTRA_NOTE_TITLE, title);
+        return intent;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
-        titleText = findViewById(R.id.titleText);
-        noteText = findViewById(R.id.editText);
+        titleText = findViewById(R.id.et_title);
+        noteText = findViewById(R.id.et_note);
 
         Intent intent = getIntent();
         String action = intent.getAction();
@@ -61,13 +70,13 @@ public class NoteActivity extends AppCompatActivity {
                 title = "";
             }
         } else { // If activity started from notes list
-            title = intent.getStringExtra("noteTitle");
-            if (title == null) {
+            title = intent.getStringExtra(EXTRA_NOTE_TITLE);
+            if (title == null || TextUtils.isEmpty(title)) {
                 title = "";
                 note = "";
                 noteText.requestFocus();
                 if (getSupportActionBar() != null)
-                    getSupportActionBar().setTitle("New Note");
+                    getSupportActionBar().setTitle(getString(R.string.new_note));
             } else {
                 titleText.setText(title);
                 note = openFile(title);
@@ -119,7 +128,7 @@ public class NoteActivity extends AppCompatActivity {
         titleText.setBackgroundTintList(ColorStateList.valueOf(colourPrimary));
 
         // Set actionbar and background colour
-        findViewById(R.id.scrollView).setBackgroundColor(colourBackground);
+        findViewById(R.id.scroll_view).setBackgroundColor(colourBackground);
         if (getSupportActionBar() != null)
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(colourPrimary));
 
@@ -133,10 +142,10 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     private void getSettings(SharedPreferences preferences) {
-        colourPrimary = preferences.getInt("colourPrimary", ContextCompat.getColor(NoteActivity.this, R.color.colorPrimary));
-        colourFont = preferences.getInt("colourFont", Color.BLACK);
-        colourBackground = preferences.getInt("colourBackground", Color.WHITE);
-        colourNavbar = preferences.getBoolean("colourNavbar", false);
+        colourPrimary = preferences.getInt(HelperUtils.PREFERENCE_COLOUR_PRIMARY, ContextCompat.getColor(NoteActivity.this, R.color.colorPrimary));
+        colourFont = preferences.getInt(HelperUtils.PREFERENCE_COLOUR_FONT, Color.BLACK);
+        colourBackground = preferences.getInt(HelperUtils.PREFERENCE_COLOUR_BACKGROUND, Color.WHITE);
+        colourNavbar = preferences.getBoolean(HelperUtils.PREFERENCE_COLOUR_NAVBAR, false);
     }
 
     @Override
@@ -148,27 +157,27 @@ public class NoteActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.undoButton:
+            case R.id.btn_undo:
                 noteText.setText(note);
                 noteText.setSelection(noteText.getText().length());
                 return (true);
 
-            case R.id.shareButton:
+            case R.id.btn_share:
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
                 sendIntent.putExtra(Intent.EXTRA_TEXT, noteText.getText().toString());
                 sendIntent.setType("text/plain");
-                startActivity(Intent.createChooser(sendIntent, "Share to:"));
+                startActivity(Intent.createChooser(sendIntent, getString(R.string.share_to)));
                 return (true);
 
-            case R.id.deleteButton:
+            case R.id.btn_delete:
                 dialog = new AlertDialog.Builder(NoteActivity.this, R.style.AlertDialogTheme)
-                        .setTitle("Confirm Delete")
-                        .setMessage("Are you sure you want to delete this note?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        .setTitle(getString(R.string.confirm_delete))
+                        .setMessage(getString(R.string.confirm_delete_text))
+                        .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 if (fileExists(title)) {
-                                    deleteFile(title + ".txt");
+                                    deleteFile(title + HelperUtils.TEXT_FILE_EXTENSION);
                                 }
                                 title = "";
                                 note = "";
@@ -177,7 +186,7 @@ public class NoteActivity extends AppCompatActivity {
                                 finish();
                             }
                         })
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
 
                             }
@@ -220,7 +229,7 @@ public class NoteActivity extends AppCompatActivity {
 
         // If the title is not empty and the file name has changed then delete the old file
         if (!TextUtils.isEmpty(title) && !newTitle.equals(title)) {
-            deleteFile(title + ".txt");
+            deleteFile(title + HelperUtils.TEXT_FILE_EXTENSION);
         }
 
         // Set the title to be the new saved title for when the home button is pressed
@@ -231,7 +240,7 @@ public class NoteActivity extends AppCompatActivity {
     private String newFileName(String name) {
         // If it is empty, give it a default title of "Note"
         if (TextUtils.isEmpty(name)) {
-            name = "Note";
+            name = getString(R.string.note);
         }
         // If the name already exists, append a number to it
         if (fileExists(name)) {
@@ -249,16 +258,16 @@ public class NoteActivity extends AppCompatActivity {
 
     private void writeFile(String fileName, String fileContent) {
         try {
-            OutputStreamWriter out = new OutputStreamWriter(openFileOutput(fileName + ".txt", 0));
+            OutputStreamWriter out = new OutputStreamWriter(openFileOutput(fileName + HelperUtils.TEXT_FILE_EXTENSION, 0));
             out.write(fileContent);
             out.close();
         } catch (Throwable t) {
-            Toast.makeText(NoteActivity.this, "Exception: " + t.toString(), Toast.LENGTH_LONG).show();
+            Toast.makeText(NoteActivity.this, getString(R.string.exception) + t.toString(), Toast.LENGTH_LONG).show();
         }
     }
 
     private boolean fileExists(String fileName) {
-        File file = getBaseContext().getFileStreamPath(fileName + ".txt");
+        File file = getBaseContext().getFileStreamPath(fileName + HelperUtils.TEXT_FILE_EXTENSION);
         return file.exists();
     }
 
@@ -266,7 +275,7 @@ public class NoteActivity extends AppCompatActivity {
         String content = "";
         if (fileExists(fileName)) {
             try {
-                InputStream in = openFileInput(fileName + ".txt");
+                InputStream in = openFileInput(fileName + HelperUtils.TEXT_FILE_EXTENSION);
                 if (in != null) {
                     InputStreamReader tmp = new InputStreamReader(in);
                     BufferedReader reader = new BufferedReader(tmp);
@@ -279,7 +288,7 @@ public class NoteActivity extends AppCompatActivity {
                     content = buf.toString();
                 }
             } catch (Exception e) {
-                Toast.makeText(NoteActivity.this, "Exception: " + e.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(NoteActivity.this, getString(R.string.exception) + e.toString(), Toast.LENGTH_LONG).show();
             }
         }
         return content.trim();

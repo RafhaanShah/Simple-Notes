@@ -4,15 +4,15 @@
     tools:context=".NoteActivity">
 
     <item
-        android:id="@+id/searchButton"
-        android:title="Search"
+        android:id="@+id/btn_search"
+        android:title="@string/search"
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/settingsButton"
+        android:id="@+id/btn_settings"
         android:icon="@drawable/ic_settings_white_24dp"
-        android:title="Settings"
-        app:showAsAction="always" />
+        android:title="@string/settings"
+        app:showAsAction="ifRoom" />
 
 </menu>

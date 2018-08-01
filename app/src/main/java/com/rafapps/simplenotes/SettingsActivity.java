@@ -46,9 +46,9 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
         setContentView(R.layout.activity_settings);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this);
-        imageAccent = findViewById(R.id.imageAccent);
-        imageFont = findViewById(R.id.imageFont);
-        imageBackground = findViewById(R.id.imageBackground);
+        imageAccent = findViewById(R.id.image_accent);
+        imageFont = findViewById(R.id.image_font);
+        imageBackground = findViewById(R.id.image_background);
 
         getSettings(preferences);
         applySettings();
@@ -66,11 +66,11 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
         // Set action bar colour
         if (getSupportActionBar() != null) {
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(colourPrimary));
-            getSupportActionBar().setTitle("Settings");
+            getSupportActionBar().setTitle(getString(R.string.settings));
         }
 
         // Set background colour
-        findViewById(R.id.constraintLayout).setBackgroundColor(colourBackground);
+        findViewById(R.id.layout_constraint).setBackgroundColor(colourBackground);
 
         // Set colour of indicator circles
         imageAccent.setColorFilter(colourPrimary);
@@ -83,26 +83,26 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
         imageBackground.getBackground().setColorFilter(colourPrimary, PorterDuff.Mode.SRC_ATOP);
 
         // Set font colours
-        ((TextView) findViewById(R.id.textAccent)).setTextColor(colourFont);
-        ((TextView) findViewById(R.id.textFont)).setTextColor(colourFont);
-        ((TextView) findViewById(R.id.textBackground)).setTextColor(colourFont);
-        ((TextView) findViewById(R.id.textSwitch)).setTextColor(colourFont);
+        ((TextView) findViewById(R.id.tv_accent)).setTextColor(colourFont);
+        ((TextView) findViewById(R.id.tv_font)).setTextColor(colourFont);
+        ((TextView) findViewById(R.id.tv_background)).setTextColor(colourFont);
+        ((TextView) findViewById(R.id.tv_navigationbar)).setTextColor(colourFont);
 
         // Set divider and button colours
         ((LinearLayout) findViewById(R.id.settingsLayout)).getDividerDrawable().setColorFilter(colourPrimary, PorterDuff.Mode.SRC_ATOP);
-        findViewById(R.id.buttonApply).getBackground().setColorFilter(colourPrimary, PorterDuff.Mode.SRC_ATOP);
+        findViewById(R.id.btn_apply).getBackground().setColorFilter(colourPrimary, PorterDuff.Mode.SRC_ATOP);
 
         // Set switch setting
-        navBox = findViewById(R.id.boxNavigation);
+        navBox = findViewById(R.id.checkbox_navigationbar);
         navBox.setChecked(colourNavbar);
         CompoundButtonCompat.setButtonTintList(navBox, ColorStateList.valueOf(colourPrimary));
     }
 
     private void getSettings(SharedPreferences preferences) {
-        colourPrimary = preferences.getInt("colourPrimary", ContextCompat.getColor(SettingsActivity.this, R.color.colorPrimary));
-        colourFont = preferences.getInt("colourFont", Color.BLACK);
-        colourBackground = preferences.getInt("colourBackground", Color.WHITE);
-        colourNavbar = preferences.getBoolean("colourNavbar", false);
+        colourPrimary = preferences.getInt(HelperUtils.PREFERENCE_COLOUR_PRIMARY, ContextCompat.getColor(SettingsActivity.this, R.color.colorPrimary));
+        colourFont = preferences.getInt(HelperUtils.PREFERENCE_COLOUR_FONT, Color.BLACK);
+        colourBackground = preferences.getInt(HelperUtils.PREFERENCE_COLOUR_BACKGROUND, Color.WHITE);
+        colourNavbar = preferences.getBoolean(HelperUtils.PREFERENCE_COLOUR_NAVBAR, false);
     }
 
     public void showPicker1(View view) {
@@ -133,7 +133,7 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
             case 1:
                 imageAccent.setColorFilter(selectedColor);
                 if (Color.alpha(selectedColor) != 255) {
-                    Toast t = Toast.makeText(getApplicationContext(), "App bar colour cannot have any transparency", Toast.LENGTH_LONG);
+                    Toast t = Toast.makeText(getApplicationContext(), getString(R.string.error_appbar_colour), Toast.LENGTH_LONG);
                     TextView tv = t.getView().findViewById(android.R.id.message);
                     if (tv != null) {
                         tv.setGravity(Gravity.CENTER);
@@ -157,15 +157,13 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
 
     public void saveSettings(View view) {
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt("colourPrimary", colourPrimary);
-        editor.putInt("colourFont", colourFont);
-        editor.putInt("colourBackground", colourBackground);
-        editor.putBoolean("colourNavbar", navBox.isChecked());
+        editor.putInt(HelperUtils.PREFERENCE_COLOUR_PRIMARY, colourPrimary);
+        editor.putInt(HelperUtils.PREFERENCE_COLOUR_FONT, colourFont);
+        editor.putInt(HelperUtils.PREFERENCE_COLOUR_BACKGROUND, colourBackground);
+        editor.putBoolean(HelperUtils.PREFERENCE_COLOUR_NAVBAR, navBox.isChecked());
         editor.apply();
 
-        Intent nextScreen = new Intent(SettingsActivity.this, NotesListActivity.class);
-        nextScreen.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(nextScreen);
+        startActivity(new Intent(SettingsActivity.this, NotesListActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
         finish();
     }
 }

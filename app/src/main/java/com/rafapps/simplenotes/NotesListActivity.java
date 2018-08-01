@@ -53,8 +53,8 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
         getFiles();
 
         fab = findViewById(R.id.fab);
-        emptyText = findViewById(R.id.emptyText);
-        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        emptyText = findViewById(R.id.tv_empty);
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(NotesListActivity.this);
         recyclerView.setLayoutManager(linearLayoutManager);
 
@@ -83,7 +83,7 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
 
     private void applySettings() {
         HelperUtils.applyColours(NotesListActivity.this, colourPrimary, colourNavbar);
-        findViewById(R.id.coordinatorLayout).setBackgroundColor(colourBackground);
+        findViewById(R.id.layout_coordinator).setBackgroundColor(colourBackground);
         emptyText.setTextColor(colourFont);
         fab.setBackgroundTintList(ColorStateList.valueOf(colourPrimary));
         if (getSupportActionBar() != null)
@@ -91,10 +91,10 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
     }
 
     private void getSettings(SharedPreferences preferences) {
-        colourPrimary = preferences.getInt("colourPrimary", ContextCompat.getColor(NotesListActivity.this, R.color.colorPrimary));
-        colourFont = preferences.getInt("colourFont", Color.BLACK);
-        colourBackground = preferences.getInt("colourBackground", Color.WHITE);
-        colourNavbar = preferences.getBoolean("colourNavbar", false);
+        colourPrimary = preferences.getInt(HelperUtils.PREFERENCE_COLOUR_PRIMARY, ContextCompat.getColor(NotesListActivity.this, R.color.colorPrimary));
+        colourFont = preferences.getInt(HelperUtils.PREFERENCE_COLOUR_FONT, Color.BLACK);
+        colourBackground = preferences.getInt(HelperUtils.PREFERENCE_COLOUR_BACKGROUND, Color.WHITE);
+        colourNavbar = preferences.getBoolean(HelperUtils.PREFERENCE_COLOUR_NAVBAR, false);
     }
 
     @Override
@@ -107,7 +107,7 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
         );
 
         // Close search
-        SearchView searchView = findViewById(R.id.searchButton);
+        SearchView searchView = findViewById(R.id.btn_search);
         if (searchView != null) {
             if (!searchView.isIconified()) {
                 searchView.onActionViewCollapsed();
@@ -126,14 +126,14 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
             emptyText.setVisibility(View.GONE);
         }
 
-        findViewById(R.id.coordinatorLayout).clearFocus();
+        findViewById(R.id.layout_coordinator).clearFocus();
 
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_notes_list, menu);
-        final MenuItem searchItem = menu.findItem(R.id.searchButton);
+        final MenuItem searchItem = menu.findItem(R.id.btn_search);
         final SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setOnQueryTextListener(NotesListActivity.this);
         searchView.setMaxWidth(Integer.MAX_VALUE);
@@ -144,11 +144,10 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.settingsButton:
-                Intent settingsScreen = new Intent(getApplicationContext(), SettingsActivity.class);
-                startActivity(settingsScreen);
+            case R.id.btn_settings:
+                startActivity(new Intent(NotesListActivity.this, SettingsActivity.class));
                 return (true);
-            case R.id.searchButton:
+            case R.id.btn_search:
                 return (true);
         }
         return (super.onOptionsItemSelected(item));
@@ -182,15 +181,14 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
     }
 
     public void newNote(View view) {
-        Intent nextScreen = new Intent(getApplicationContext(), NoteActivity.class);
-        startActivity(nextScreen);
+        startActivity(NoteActivity.getStartIntent(NotesListActivity.this, ""));
     }
 
     private void getFiles() {
         File[] files = getFilesDir().listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                return name.toLowerCase().endsWith(".txt");
+                return name.toLowerCase().endsWith(HelperUtils.TEXT_FILE_EXTENSION);
             }
         });
 
@@ -211,7 +209,7 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
 
     @Override
     public void onBackPressed() {
-        SearchView searchView = findViewById(R.id.searchButton);
+        SearchView searchView = findViewById(R.id.btn_search);
         if (!searchView.isIconified()) {
             searchView.onActionViewCollapsed();
         } else {
