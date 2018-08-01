@@ -45,7 +45,7 @@ public class NoteActivity extends AppCompatActivity {
     int colourBackground;
 
     public static Intent getStartIntent(Context context, String title) {
-        Intent intent = new Intent(context, NotesListActivity.class);
+        Intent intent = new Intent(context, NoteActivity.class);
         intent.putExtra(EXTRA_NOTE_TITLE, title);
         return intent;
     }
