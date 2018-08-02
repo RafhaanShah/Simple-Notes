@@ -9,12 +9,43 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.io.File;
 import java.text.DateFormat;
+import java.util.ArrayList;
 
 class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder> {
 
-    private String[] notesList;
-    private Long[] datesList;
+    private ArrayList<File> filesList;
+
+    NotesListAdapter(ArrayList<File> files) {
+        filesList = files;
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull NotesListAdapter.ViewHolder holder, int position) {
+        File file = filesList.get(position);
+        String fileName = file.getName().substring(0, file.getName().length() - 4);
+        String fileDate = DateFormat.getDateInstance(DateFormat.MEDIUM).format(file.lastModified()) + "\n" + DateFormat.getTimeInstance(DateFormat.SHORT).format(file.lastModified());
+        holder.setData(fileName, fileDate);
+    }
+
+    @NonNull
+    @Override
+    public NotesListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View inflatedView = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.list_item, parent, false);
+        return new ViewHolder(inflatedView);
+    }
+
+    @Override
+    public int getItemCount() {
+        return filesList.size();
+    }
+
+    void updateDataList(ArrayList<File> files) {
+        filesList = files;
+        notifyDataSetChanged();
+    }
 
     static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -36,40 +67,10 @@ class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder>
             itemView.getContext().startActivity(NoteActivity.getStartIntent(itemView.getContext(), stringTitle));
         }
 
-        void setData(String title, Long date) {
+        void setData(String title, String date) {
             stringTitle = title;
             noteTitle.setText(title);
-            String dateText = DateFormat.getDateInstance(DateFormat.MEDIUM).format(date) + "\n" + DateFormat.getTimeInstance(DateFormat.SHORT).format(date);
-            noteDate.setText(dateText);
+            noteDate.setText(date);
         }
-    }
-
-    NotesListAdapter(String[] notes, Long[] dates) {
-        notesList = notes;
-        datesList = dates;
-    }
-
-    @NonNull
-    @Override
-    public NotesListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View inflatedView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_item, parent, false);
-        return new ViewHolder(inflatedView);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull NotesListAdapter.ViewHolder holder, int position) {
-        holder.setData(notesList[position], datesList[position]);
-    }
-
-    @Override
-    public int getItemCount() {
-        return notesList.length;
-    }
-
-    void updateDataList(String[] files, Long[] dates) {
-        notesList = files;
-        datesList = dates;
-        notifyDataSetChanged();
     }
 }
