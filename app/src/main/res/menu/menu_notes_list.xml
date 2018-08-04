@@ -10,6 +10,12 @@
         app:showAsAction="always" />
 
     <item
+        android:id="@+id/btn_sort"
+        android:icon="@drawable/ic_sort_numeric_white_24dp"
+        android:title="@string/sort"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/btn_settings"
         android:icon="@drawable/ic_settings_white_24dp"
         android:title="@string/settings"

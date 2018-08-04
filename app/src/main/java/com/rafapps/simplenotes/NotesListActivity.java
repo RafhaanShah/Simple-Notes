@@ -26,15 +26,20 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 
 public class NotesListActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
+
+    public static String PREFERENCE_SORT_ALPHABETICAL = "sortAlphabetical";
 
     private ArrayList<File> filesList;
     private TextView emptyText;
     private NotesListAdapter notesListAdapter;
     private FloatingActionButton fab;
     private boolean colourNavbar;
+    private boolean sortAlphabetical;
+    private SharedPreferences preferences;
 
     private @ColorInt
     int colourPrimary;
@@ -49,6 +54,7 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notes_list);
 
+        preferences = PreferenceManager.getDefaultSharedPreferences(NotesListActivity.this);
         fab = findViewById(R.id.fab);
         emptyText = findViewById(R.id.tv_empty);
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
@@ -74,7 +80,7 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
             }
         });
 
-        getSettings(PreferenceManager.getDefaultSharedPreferences(NotesListActivity.this));
+        getSettings(preferences);
         applySettings();
     }
 
@@ -97,8 +103,12 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
 
         // Update the list
         filesList = getFiles();
+        if (sortAlphabetical) {
+            sortAlphabetical(filesList);
+        } else {
+            sortDate(filesList);
+        }
         notesListAdapter.updateDataList(filesList);
-        //recyclerView.invalidate();
 
         // If the list is empty, show message
         if (notesListAdapter.getItemCount() == 0) {
@@ -111,6 +121,14 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
     }
 
     @Override
+    public void onPause() {
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(PREFERENCE_SORT_ALPHABETICAL, sortAlphabetical);
+        editor.apply();
+        super.onPause();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_notes_list, menu);
         final MenuItem searchItem = menu.findItem(R.id.btn_search);
@@ -118,6 +136,8 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
         searchView.setOnQueryTextListener(NotesListActivity.this);
         searchView.setMaxWidth(Integer.MAX_VALUE);
         searchView.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+        if (sortAlphabetical)
+            menu.findItem(R.id.btn_sort).setIcon(R.drawable.ic_action_sort_az);
         return true;
     }
 
@@ -127,6 +147,17 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
             case R.id.btn_settings:
                 startActivity(new Intent(NotesListActivity.this, SettingsActivity.class));
                 return (true);
+            case R.id.btn_sort:
+                if (sortAlphabetical) {
+                    item.setIcon(R.drawable.ic_sort_numeric_white_24dp);
+                    sortAlphabetical = false;
+                    sortDate(filesList);
+                } else {
+                    item.setIcon(R.drawable.ic_action_sort_az);
+                    sortAlphabetical = true;
+                    sortAlphabetical(filesList);
+                }
+                notesListAdapter.updateDataList(filesList);
             case R.id.btn_search:
                 return (true);
         }
@@ -175,6 +206,7 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
         colourFont = preferences.getInt(HelperUtils.PREFERENCE_COLOUR_FONT, Color.BLACK);
         colourBackground = preferences.getInt(HelperUtils.PREFERENCE_COLOUR_BACKGROUND, Color.WHITE);
         colourNavbar = preferences.getBoolean(HelperUtils.PREFERENCE_COLOUR_NAVBAR, false);
+        sortAlphabetical = preferences.getBoolean(PREFERENCE_SORT_ALPHABETICAL, false);
     }
 
     private void applySettings() {
@@ -198,12 +230,22 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
             }
         });
 
-        Arrays.sort(files, new Comparator<File>() {
+        return new ArrayList<>(Arrays.asList(files));
+    }
+
+    private void sortAlphabetical(ArrayList<File> files) {
+        Collections.sort(files, new Comparator<File>() {
+            public int compare(File f1, File f2) {
+                return (f1.getName().compareTo(f2.getName()));
+            }
+        });
+    }
+
+    private void sortDate(ArrayList<File> files) {
+        Collections.sort(files, new Comparator<File>() {
             public int compare(File f1, File f2) {
                 return Long.compare(f2.lastModified(), f1.lastModified());
             }
         });
-
-        return new ArrayList<>(Arrays.asList(files));
     }
 }
