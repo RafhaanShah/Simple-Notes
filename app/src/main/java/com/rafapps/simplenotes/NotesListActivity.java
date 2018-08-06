@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.ColorInt;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -63,7 +64,7 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(NotesListActivity.this);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        notesListAdapter = new NotesListAdapter(new ArrayList<File>());
+        notesListAdapter = new NotesListAdapter(new ArrayList<File>(), NotesListActivity.this, recyclerView);
         recyclerView.setAdapter(notesListAdapter);
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
@@ -110,7 +111,7 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
         } else {
             sortDate(filesList);
         }
-        notesListAdapter.updateDataList(filesList);
+        notesListAdapter.updateDataList(filesList, false);
 
         // If the list is empty, show message
         if (notesListAdapter.getItemCount() == 0) {
@@ -165,7 +166,7 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
                     if (drawable instanceof Animatable)
                         ((Animatable) drawable).start();
                 }
-                notesListAdapter.updateDataList(filesList);
+                notesListAdapter.updateDataList(filesList, true);
             case R.id.btn_search:
                 return (true);
         }
@@ -185,7 +186,7 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
     @Override
     public boolean onQueryTextChange(String query) {
         if (TextUtils.isEmpty(query)) {
-            notesListAdapter.updateDataList(filesList);
+            notesListAdapter.updateDataList(filesList, false);
             return true;
         }
 
@@ -200,7 +201,7 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
             }
         }
 
-        notesListAdapter.updateDataList(filteredList);
+        notesListAdapter.updateDataList(filteredList, false);
         return true;
     }
 
@@ -222,8 +223,10 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
         findViewById(R.id.layout_coordinator).setBackgroundColor(colourBackground);
         emptyText.setTextColor(colourFont);
         fab.setBackgroundTintList(ColorStateList.valueOf(colourPrimary));
-        if (getSupportActionBar() != null)
-            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(colourPrimary));
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setBackgroundDrawable(new ColorDrawable(colourPrimary));
+        }
     }
 
     public void newNote(View view) {

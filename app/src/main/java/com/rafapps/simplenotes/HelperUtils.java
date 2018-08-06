@@ -2,8 +2,12 @@ package com.rafapps.simplenotes;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.support.v7.widget.LinearSmoothScroller;
+import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -45,5 +49,16 @@ public class HelperUtils {
         // Set task description, colour and icon for the app switcher
         activity.setTaskDescription(new ActivityManager.TaskDescription(activity.getString(R.string.app_name),
                 BitmapFactory.decodeResource(activity.getResources(), R.drawable.ic_note), colourPrimary));
+    }
+
+    public static void scrollToTop(Context context, RecyclerView recyclerView) {
+        LinearSmoothScroller linearSmoothScroller = new LinearSmoothScroller(context) {
+            @Override
+            protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
+                return 50f / displayMetrics.densityDpi;
+            }
+        };
+        linearSmoothScroller.setTargetPosition(0);
+        recyclerView.getLayoutManager().startSmoothScroll(linearSmoothScroller);
     }
 }

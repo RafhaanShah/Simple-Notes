@@ -26,6 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/transparent"
+        android:layoutAnimation="@anim/layout_animation_fall_down"
         android:padding="0dp"
         android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
