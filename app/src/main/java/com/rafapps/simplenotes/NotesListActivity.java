@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.Animatable;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.ColorInt;
@@ -137,7 +139,7 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
         searchView.setMaxWidth(Integer.MAX_VALUE);
         searchView.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         if (sortAlphabetical)
-            menu.findItem(R.id.btn_sort).setIcon(R.drawable.ic_action_sort_az);
+            menu.findItem(R.id.btn_sort).setIcon(R.drawable.alphabetical_to_numerical);
         return true;
     }
 
@@ -149,13 +151,19 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
                 return (true);
             case R.id.btn_sort:
                 if (sortAlphabetical) {
-                    item.setIcon(R.drawable.ic_sort_numeric_white_24dp);
+                    item.setIcon(R.drawable.alphabetical_to_numerical);
                     sortAlphabetical = false;
                     sortDate(filesList);
+                    Drawable drawable = item.getIcon();
+                    if (drawable instanceof Animatable)
+                        ((Animatable) drawable).start();
                 } else {
-                    item.setIcon(R.drawable.ic_action_sort_az);
+                    item.setIcon(R.drawable.numeric_to_alphabetical);
                     sortAlphabetical = true;
                     sortAlphabetical(filesList);
+                    Drawable drawable = item.getIcon();
+                    if (drawable instanceof Animatable)
+                        ((Animatable) drawable).start();
                 }
                 notesListAdapter.updateDataList(filesList);
             case R.id.btn_search:

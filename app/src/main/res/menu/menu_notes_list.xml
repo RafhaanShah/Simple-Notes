@@ -11,7 +11,7 @@
 
     <item
         android:id="@+id/btn_sort"
-        android:icon="@drawable/ic_sort_numeric_white_24dp"
+        android:icon="@drawable/numeric_to_alphabetical"
         android:title="@string/sort"
         app:showAsAction="always" />
 
