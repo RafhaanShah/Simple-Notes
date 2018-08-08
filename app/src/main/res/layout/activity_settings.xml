@@ -11,7 +11,7 @@
         android:id="@+id/settingsLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:divider="?attr/dividerHorizontal"
+        android:divider="@drawable/divider_settings"
         android:orientation="vertical"
         android:showDividers="middle|end">
 
@@ -20,13 +20,15 @@
             android:layout_height="60dp"
             android:gravity="center_vertical"
             android:onClick="showPicker1"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingBottom="4dp"
+            android:paddingTop="8dp">
 
             <ImageView
                 android:id="@+id/image_accent"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_margin="8dp"
+                android:layout_margin="12dp"
                 android:background="@drawable/square"
                 android:contentDescription="@string/colour_indicator"
                 android:src="@drawable/ic_bg" />
@@ -46,13 +48,15 @@
             android:layout_height="60dp"
             android:gravity="center_vertical"
             android:onClick="showPicker2"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingBottom="4dp"
+            android:paddingTop="4dp">
 
             <ImageView
                 android:id="@+id/image_font"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_margin="8dp"
+                android:layout_margin="12dp"
                 android:background="@drawable/square"
                 android:contentDescription="@string/colour_indicator"
                 android:src="@drawable/ic_bg" />
@@ -73,13 +77,15 @@
             android:layout_height="60dp"
             android:gravity="center_vertical"
             android:onClick="showPicker3"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingBottom="4dp"
+            android:paddingTop="4dp">
 
             <ImageView
                 android:id="@+id/image_background"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_margin="8dp"
+                android:layout_margin="12dp"
                 android:background="@drawable/square"
                 android:contentDescription="@string/colour_indicator"
                 android:src="@drawable/ic_bg" />
@@ -99,14 +105,15 @@
             android:layout_height="60dp"
             android:gravity="center_vertical"
             android:onClick="toggleCheckBox"
-            android:orientation="horizontal">
-
+            android:orientation="horizontal"
+            android:paddingBottom="4dp"
+            android:paddingTop="4dp">
 
             <CheckBox
                 android:id="@+id/checkbox_navigationbar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="12dp" />
+                android:layout_margin="16dp" />
 
             <TextView
                 android:id="@+id/tv_navigationbar"
@@ -131,5 +138,18 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="20dp" />
+
+    <android.support.constraint.Barrier
+        android:id="@+id/barrier2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top" />
 
 </android.support.constraint.ConstraintLayout>

@@ -14,6 +14,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -58,11 +59,22 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
         setContentView(R.layout.activity_notes_list);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(NotesListActivity.this);
+        getSettings(preferences);
+
         fab = findViewById(R.id.fab);
         emptyText = findViewById(R.id.tv_empty);
+
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(NotesListActivity.this);
         recyclerView.setLayoutManager(linearLayoutManager);
+
+        DividerItemDecoration itemDecorator = new DividerItemDecoration(NotesListActivity.this, DividerItemDecoration.VERTICAL);
+        Drawable divider = getDrawable(R.drawable.divider);
+        if (divider != null) {
+            divider.setTint(colourPrimary);
+            itemDecorator.setDrawable(divider);
+            recyclerView.addItemDecoration(itemDecorator);
+        }
 
         notesListAdapter = new NotesListAdapter(new ArrayList<File>(), NotesListActivity.this, recyclerView);
         recyclerView.setAdapter(notesListAdapter);
@@ -82,8 +94,6 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
                 super.onScrollStateChanged(recyclerView, newState);
             }
         });
-
-        getSettings(preferences);
         applySettings();
     }
 

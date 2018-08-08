@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,8 +33,9 @@ class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder>
     public void onBindViewHolder(@NonNull NotesListAdapter.ViewHolder holder, int position) {
         File file = filesList.get(position);
         String fileName = file.getName().substring(0, file.getName().length() - 4);
-        String fileDate = DateFormat.getDateInstance(DateFormat.MEDIUM).format(file.lastModified()) + "\n" + DateFormat.getTimeInstance(DateFormat.SHORT).format(file.lastModified());
-        holder.setData(fileName, fileDate);
+        String fileDate = DateFormat.getDateInstance(DateFormat.MEDIUM).format(file.lastModified());
+        String fileTime = DateFormat.getTimeInstance(DateFormat.SHORT).format(file.lastModified());
+        holder.setData(fileName, fileDate, fileTime);
     }
 
     @NonNull
@@ -65,26 +67,31 @@ class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder>
 
         private final TextView noteTitle;
         private final TextView noteDate;
+        private final TextView noteTime;
         private String stringTitle;
 
         ViewHolder(View v) {
             super(v);
             noteTitle = v.findViewById(R.id.tv_title);
             noteDate = v.findViewById(R.id.tv_date);
+            noteTime = v.findViewById(R.id.tv_time);
             noteTitle.setTextColor(PreferenceManager.getDefaultSharedPreferences(itemView.getContext()).getInt(HelperUtils.PREFERENCE_COLOUR_FONT, Color.BLACK));
             noteDate.setTextColor(PreferenceManager.getDefaultSharedPreferences(itemView.getContext()).getInt(HelperUtils.PREFERENCE_COLOUR_FONT, Color.BLACK));
+            noteTime.setTextColor(PreferenceManager.getDefaultSharedPreferences(itemView.getContext()).getInt(HelperUtils.PREFERENCE_COLOUR_FONT, Color.BLACK));
             v.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
+            Log.v("Click", "Viewholder");
             itemView.getContext().startActivity(NoteActivity.getStartIntent(itemView.getContext(), stringTitle));
         }
 
-        void setData(String title, String date) {
+        void setData(String title, String date, String time) {
             stringTitle = title;
             noteTitle.setText(title);
             noteDate.setText(date);
+            noteTime.setText(time);
         }
     }
 }
