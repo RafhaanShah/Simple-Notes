@@ -1,32 +1,31 @@
 package com.rafapps.simplenotes;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LayoutAnimationController;
 import android.widget.TextView;
 
 import java.io.File;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder> {
 
-    private ArrayList<File> filesList;
-    private Context context;
-    private RecyclerView recyclerView;
+    private List<File> fullList;
+    private List<File> filesList;
 
-    NotesListAdapter(ArrayList<File> files, Context getContext, RecyclerView getRecyclerView) {
-        filesList = files;
-        context = getContext;
-        recyclerView = getRecyclerView;
+    NotesListAdapter() {
+        filesList = new ArrayList<>();
+        fullList = new ArrayList<>();
     }
 
     @Override
@@ -51,16 +50,56 @@ class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder>
         return filesList.size();
     }
 
-    void updateDataList(ArrayList<File> files, boolean animate) {
+    void updateList(List<File> files, boolean sortAlphabetical) {
         filesList = files;
-        if (animate) {
-            final LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_fall_down);
-            recyclerView.setLayoutAnimation(controller);
-            notifyDataSetChanged();
-            recyclerView.scheduleLayoutAnimation();
+        sortList(sortAlphabetical);
+        fullList = new ArrayList<>(filesList);
+    }
+
+    // TODO: Fix icon
+    void sortList(boolean sortAlphabetical) {
+        if (sortAlphabetical) {
+            sortAlphabetical(filesList);
         } else {
-            notifyDataSetChanged();
+            sortDate(filesList);
         }
+        DiffUtil.calculateDiff(new NotesDiffCallback(fullList, filesList)).dispatchUpdatesTo(this);
+        fullList = new ArrayList<>(filesList);
+    }
+
+    void filterList(String query) {
+        // TODO: Wait until query entered
+        if (TextUtils.isEmpty(query)) {
+            DiffUtil.calculateDiff(new NotesDiffCallback(filesList, fullList)).dispatchUpdatesTo(this);
+            filesList = new ArrayList<>(fullList);
+        } else {
+            filesList.clear();
+            for (int i = 0; i < fullList.size(); i++) {
+                final File file = fullList.get(i);
+                final String fileName = file.getName().substring(0, file.getName().length() - 4).toLowerCase();
+                if (fileName.contains(query)) {
+                    filesList.add(fullList.get(i));
+                }
+            }
+            DiffUtil.calculateDiff(new NotesDiffCallback(fullList, filesList)).dispatchUpdatesTo(this);
+        }
+    }
+
+    // TODO: Use sorted list
+    private void sortAlphabetical(List<File> files) {
+        Collections.sort(files, new Comparator<File>() {
+            public int compare(File f1, File f2) {
+                return (f1.getName().compareTo(f2.getName()));
+            }
+        });
+    }
+
+    private void sortDate(List<File> files) {
+        Collections.sort(files, new Comparator<File>() {
+            public int compare(File f1, File f2) {
+                return Long.compare(f2.lastModified(), f1.lastModified());
+            }
+        });
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -83,7 +122,6 @@ class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder>
 
         @Override
         public void onClick(View v) {
-            Log.v("Click", "Viewholder");
             itemView.getContext().startActivity(NoteActivity.getStartIntent(itemView.getContext(), stringTitle));
         }
 

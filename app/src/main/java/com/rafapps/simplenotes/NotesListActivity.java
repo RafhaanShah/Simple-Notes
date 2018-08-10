@@ -18,7 +18,6 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,14 +29,11 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 
 public class NotesListActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     public static String PREFERENCE_SORT_ALPHABETICAL = "sortAlphabetical";
 
-    private ArrayList<File> filesList;
     private TextView emptyText;
     private NotesListAdapter notesListAdapter;
     private FloatingActionButton fab;
@@ -76,7 +72,7 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
             recyclerView.addItemDecoration(itemDecorator);
         }
 
-        notesListAdapter = new NotesListAdapter(new ArrayList<File>(), NotesListActivity.this, recyclerView);
+        notesListAdapter = new NotesListAdapter();
         recyclerView.setAdapter(notesListAdapter);
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
@@ -115,13 +111,7 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
         }
 
         // Update the list
-        filesList = getFiles();
-        if (sortAlphabetical) {
-            sortAlphabetical(filesList);
-        } else {
-            sortDate(filesList);
-        }
-        notesListAdapter.updateDataList(filesList, false);
+        notesListAdapter.updateList(getFiles(), sortAlphabetical);
 
         // If the list is empty, show message
         if (notesListAdapter.getItemCount() == 0) {
@@ -164,19 +154,14 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
                 if (sortAlphabetical) {
                     item.setIcon(R.drawable.alphabetical_to_numerical);
                     sortAlphabetical = false;
-                    sortDate(filesList);
-                    Drawable drawable = item.getIcon();
-                    if (drawable instanceof Animatable)
-                        ((Animatable) drawable).start();
                 } else {
                     item.setIcon(R.drawable.numeric_to_alphabetical);
                     sortAlphabetical = true;
-                    sortAlphabetical(filesList);
-                    Drawable drawable = item.getIcon();
-                    if (drawable instanceof Animatable)
-                        ((Animatable) drawable).start();
                 }
-                notesListAdapter.updateDataList(filesList, true);
+                notesListAdapter.sortList(sortAlphabetical);
+                Drawable drawable = item.getIcon();
+                if (drawable instanceof Animatable)
+                    ((Animatable) drawable).start();
             case R.id.btn_search:
                 return (true);
         }
@@ -195,23 +180,7 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
 
     @Override
     public boolean onQueryTextChange(String query) {
-        if (TextUtils.isEmpty(query)) {
-            notesListAdapter.updateDataList(filesList, false);
-            return true;
-        }
-
-        query = query.toLowerCase();
-        final ArrayList<File> filteredList = new ArrayList<>();
-
-        for (int i = 0; i < filesList.size(); i++) {
-            final File file = filesList.get(i);
-            final String fileName = file.getName().substring(0, file.getName().length() - 4).toLowerCase();
-            if (fileName.contains(query)) {
-                filteredList.add(filesList.get(i));
-            }
-        }
-
-        notesListAdapter.updateDataList(filteredList, false);
+        notesListAdapter.filterList(query.toLowerCase());
         return true;
     }
 
@@ -250,23 +219,6 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
                 return name.toLowerCase().endsWith(HelperUtils.TEXT_FILE_EXTENSION);
             }
         });
-
         return new ArrayList<>(Arrays.asList(files));
-    }
-
-    private void sortAlphabetical(ArrayList<File> files) {
-        Collections.sort(files, new Comparator<File>() {
-            public int compare(File f1, File f2) {
-                return (f1.getName().compareTo(f2.getName()));
-            }
-        });
-    }
-
-    private void sortDate(ArrayList<File> files) {
-        Collections.sort(files, new Comparator<File>() {
-            public int compare(File f1, File f2) {
-                return Long.compare(f2.lastModified(), f1.lastModified());
-            }
-        });
     }
 }
