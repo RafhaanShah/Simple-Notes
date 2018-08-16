@@ -56,7 +56,6 @@ class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder>
         fullList = new ArrayList<>(filesList);
     }
 
-    // TODO: Fix icon
     void sortList(boolean sortAlphabetical) {
         if (sortAlphabetical) {
             sortAlphabetical(filesList);

@@ -140,7 +140,7 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
         searchView.setMaxWidth(Integer.MAX_VALUE);
         searchView.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         if (sortAlphabetical)
-            menu.findItem(R.id.btn_sort).setIcon(R.drawable.alphabetical_to_numerical);
+            menu.findItem(R.id.btn_sort).setIcon(R.drawable.ic_sort_alphabetical);
         return true;
     }
 
