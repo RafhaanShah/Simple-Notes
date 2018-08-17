@@ -3,6 +3,7 @@ package com.rafapps.simplenotes;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -27,6 +28,8 @@ class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder>
         filesList = new ArrayList<>();
         fullList = new ArrayList<>();
     }
+
+    //TODO: Change "View v" to "View view", supply colours to view holder, add delete popup
 
     @Override
     public void onBindViewHolder(@NonNull NotesListAdapter.ViewHolder holder, int position) {
@@ -56,6 +59,14 @@ class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder>
         fullList = new ArrayList<>(filesList);
     }
 
+    void deleteFile(int position) {
+        File file = filesList.get(position);
+        fullList.remove(file);
+        filesList.remove(file);
+        notifyItemRemoved(position);
+        file.delete();
+    }
+
     void sortList(boolean sortAlphabetical) {
         if (sortAlphabetical) {
             sortAlphabetical(filesList);
@@ -67,7 +78,6 @@ class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder>
     }
 
     void filterList(String query) {
-        // TODO: Wait until query entered
         if (TextUtils.isEmpty(query)) {
             DiffUtil.calculateDiff(new NotesDiffCallback(filesList, fullList)).dispatchUpdatesTo(this);
             filesList = new ArrayList<>(fullList);
@@ -84,7 +94,6 @@ class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder>
         }
     }
 
-    // TODO: Use sorted list
     private void sortAlphabetical(List<File> files) {
         Collections.sort(files, new Comparator<File>() {
             public int compare(File f1, File f2) {
@@ -107,6 +116,7 @@ class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder>
         private final TextView noteDate;
         private final TextView noteTime;
         private String stringTitle;
+        public ConstraintLayout constraintLayout;
 
         ViewHolder(View v) {
             super(v);
@@ -116,6 +126,8 @@ class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder>
             noteTitle.setTextColor(PreferenceManager.getDefaultSharedPreferences(itemView.getContext()).getInt(HelperUtils.PREFERENCE_COLOUR_FONT, Color.BLACK));
             noteDate.setTextColor(PreferenceManager.getDefaultSharedPreferences(itemView.getContext()).getInt(HelperUtils.PREFERENCE_COLOUR_FONT, Color.BLACK));
             noteTime.setTextColor(PreferenceManager.getDefaultSharedPreferences(itemView.getContext()).getInt(HelperUtils.PREFERENCE_COLOUR_FONT, Color.BLACK));
+            constraintLayout = v.findViewById(R.id.layout_constraint);
+            constraintLayout.setBackgroundColor(PreferenceManager.getDefaultSharedPreferences(itemView.getContext()).getInt(HelperUtils.PREFERENCE_COLOUR_BACKGROUND, Color.WHITE));
             v.setOnClickListener(this);
         }
 

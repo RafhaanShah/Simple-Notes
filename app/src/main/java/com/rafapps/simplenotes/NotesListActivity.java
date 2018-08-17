@@ -3,6 +3,7 @@ package com.rafapps.simplenotes;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.ColorDrawable;
@@ -18,6 +19,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -90,6 +92,8 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
                 super.onScrollStateChanged(recyclerView, newState);
             }
         });
+
+        setItemTouchHelper(recyclerView);
         applySettings();
     }
 
@@ -206,6 +210,54 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
         if (actionBar != null) {
             actionBar.setBackgroundDrawable(new ColorDrawable(colourPrimary));
         }
+    }
+
+    private void setItemTouchHelper(RecyclerView recyclerView) {
+        ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return true;
+            }
+
+            @Override
+            public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
+                if (viewHolder != null) {
+                    final View foregroundView = ((NotesListAdapter.ViewHolder) viewHolder).constraintLayout;
+                    getDefaultUIUtil().onSelected(foregroundView);
+                }
+            }
+
+            @Override
+            public void onChildDrawOver(Canvas c, RecyclerView recyclerView,
+                                        RecyclerView.ViewHolder viewHolder, float dX, float dY,
+                                        int actionState, boolean isCurrentlyActive) {
+                final View foregroundView = ((NotesListAdapter.ViewHolder) viewHolder).constraintLayout;
+                getDefaultUIUtil().onDrawOver(c, recyclerView, foregroundView, dX, dY,
+                        actionState, isCurrentlyActive);
+            }
+
+            @Override
+            public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                final View foregroundView = ((NotesListAdapter.ViewHolder) viewHolder).constraintLayout;
+                getDefaultUIUtil().clearView(foregroundView);
+            }
+
+            @Override
+            public void onChildDraw(Canvas c, RecyclerView recyclerView,
+                                    RecyclerView.ViewHolder viewHolder, float dX, float dY,
+                                    int actionState, boolean isCurrentlyActive) {
+                final View foregroundView = ((NotesListAdapter.ViewHolder) viewHolder).constraintLayout;
+
+                getDefaultUIUtil().onDraw(c, recyclerView, foregroundView, dX, dY,
+                        actionState, isCurrentlyActive);
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                notesListAdapter.deleteFile(viewHolder.getAdapterPosition());
+            }
+        };
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
     }
 
     public void newNote(View view) {

@@ -1,8 +1,8 @@
 <inset xmlns:android="http://schemas.android.com/apk/res/android"
-    android:insetLeft="16dp"
-    android:insetRight="16dp">
+    android:insetLeft="0dp"
+    android:insetRight="0dp">
     <shape>
         <size android:height="1dp" />
-        <solid android:color="#FFFFFF" />
+        <solid android:color="@android:color/white" />
     </shape>
 </inset>

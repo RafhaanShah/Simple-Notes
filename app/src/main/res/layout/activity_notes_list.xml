@@ -5,7 +5,6 @@
     android:id="@+id/layout_coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent"
     android:focusableInTouchMode="true"
     tools:context="com.rafapps.simplenotes.NotesListActivity">
 
@@ -25,7 +24,6 @@
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/transparent"
         android:layoutAnimation="@anim/layout_animation_fall_down"
         android:paddingTop="2dp"
         android:scrollbars="vertical"
