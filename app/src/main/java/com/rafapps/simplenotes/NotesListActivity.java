@@ -1,25 +1,32 @@
 package com.rafapps.simplenotes;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.ColorInt;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,16 +46,12 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
     private TextView emptyText;
     private NotesListAdapter notesListAdapter;
     private FloatingActionButton fab;
-    private boolean colourNavbar;
-    private boolean sortAlphabetical;
+    private boolean colourNavbar, sortAlphabetical;
     private SharedPreferences preferences;
+    private AlertDialog dialog;
 
     private @ColorInt
-    int colourPrimary;
-    private @ColorInt
-    int colourFont;
-    private @ColorInt
-    int colourBackground;
+    int colourPrimary, colourFont, colourBackground;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,18 +77,18 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
             recyclerView.addItemDecoration(itemDecorator);
         }
 
-        notesListAdapter = new NotesListAdapter();
+        notesListAdapter = new NotesListAdapter(colourFont, colourBackground);
         recyclerView.setAdapter(notesListAdapter);
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 if (dy > 0 || dy < 0 && fab.isShown())
                     fab.hide();
             }
 
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     fab.show();
                 }
@@ -117,14 +120,18 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
         // Update the list
         notesListAdapter.updateList(getFiles(), sortAlphabetical);
 
-        // If the list is empty, show message
+        showEmptyListMessage();
+
+        findViewById(R.id.layout_coordinator).clearFocus();
+    }
+
+    // If the list is empty, show message
+    private void showEmptyListMessage() {
         if (notesListAdapter.getItemCount() == 0) {
             emptyText.setVisibility(View.VISIBLE);
         } else if (emptyText.getVisibility() == View.VISIBLE) {
             emptyText.setVisibility(View.GONE);
         }
-
-        findViewById(R.id.layout_coordinator).clearFocus();
     }
 
     @Override
@@ -132,6 +139,9 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean(PREFERENCE_SORT_ALPHABETICAL, sortAlphabetical);
         editor.apply();
+        if (dialog != null && dialog.isShowing())
+            dialog.dismiss();
+        dialog = null;
         super.onPause();
     }
 
@@ -213,51 +223,70 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
     }
 
     private void setItemTouchHelper(RecyclerView recyclerView) {
-        ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-            @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                return true;
-            }
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
             @Override
-            public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
-                if (viewHolder != null) {
-                    final View foregroundView = ((NotesListAdapter.ViewHolder) viewHolder).constraintLayout;
-                    getDefaultUIUtil().onSelected(foregroundView);
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            public void onChildDraw(@NonNull Canvas canvas, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                    View itemView = viewHolder.itemView;
+
+                    Paint p = new Paint();
+                    p.setColor(ContextCompat.getColor(NotesListActivity.this, R.color.colorDelete));
+                    Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_delete_white_24dp);
+
+                    if (dX > 0) {
+                        canvas.drawRect((float) itemView.getLeft(), (float) itemView.getTop(), dX, (float) itemView.getBottom(), p);
+                        canvas.drawBitmap(icon,
+                                (float) itemView.getLeft() + Math.round(16 * (getResources().getDisplayMetrics().xdpi / DisplayMetrics.DENSITY_DEFAULT)),
+                                (float) itemView.getTop() + ((float) itemView.getBottom() - (float) itemView.getTop() - icon.getHeight()) / 2, p);
+                    } else {
+                        canvas.drawRect((float) itemView.getRight() + dX, (float) itemView.getTop(), (float) itemView.getRight(), (float) itemView.getBottom(), p);
+                        canvas.drawBitmap(icon,
+                                (float) itemView.getRight() - Math.round(16 * (getResources().getDisplayMetrics().xdpi / DisplayMetrics.DENSITY_DEFAULT)) - icon.getWidth(),
+                                (float) itemView.getTop() + ((float) itemView.getBottom() - (float) itemView.getTop() - icon.getHeight()) / 2, p);
+                    }
+                    super.onChildDraw(canvas, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
                 }
             }
 
             @Override
-            public void onChildDrawOver(Canvas c, RecyclerView recyclerView,
-                                        RecyclerView.ViewHolder viewHolder, float dX, float dY,
-                                        int actionState, boolean isCurrentlyActive) {
-                final View foregroundView = ((NotesListAdapter.ViewHolder) viewHolder).constraintLayout;
-                getDefaultUIUtil().onDrawOver(c, recyclerView, foregroundView, dX, dY,
-                        actionState, isCurrentlyActive);
-            }
-
-            @Override
-            public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-                final View foregroundView = ((NotesListAdapter.ViewHolder) viewHolder).constraintLayout;
-                getDefaultUIUtil().clearView(foregroundView);
-            }
-
-            @Override
-            public void onChildDraw(Canvas c, RecyclerView recyclerView,
-                                    RecyclerView.ViewHolder viewHolder, float dX, float dY,
-                                    int actionState, boolean isCurrentlyActive) {
-                final View foregroundView = ((NotesListAdapter.ViewHolder) viewHolder).constraintLayout;
-
-                getDefaultUIUtil().onDraw(c, recyclerView, foregroundView, dX, dY,
-                        actionState, isCurrentlyActive);
-            }
-
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                notesListAdapter.deleteFile(viewHolder.getAdapterPosition());
+            public void onSwiped(@NonNull final RecyclerView.ViewHolder viewHolder, int direction) {
+                dialog = new AlertDialog.Builder(NotesListActivity.this, R.style.AlertDialogTheme)
+                        .setTitle(getString(R.string.confirm_delete))
+                        .setMessage(getString(R.string.confirm_delete_text))
+                        .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                notesListAdapter.deleteFile(viewHolder.getAdapterPosition());
+                                showEmptyListMessage();
+                            }
+                        })
+                        .setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                notesListAdapter.cancelDelete(viewHolder.getAdapterPosition());
+                            }
+                        })
+                        .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialog) {
+                                notesListAdapter.cancelDelete(viewHolder.getAdapterPosition());
+                            }
+                        })
+                        .setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_delete_white_24dp))
+                        .show();
+                if (dialog.getWindow() != null) {
+                    dialog.getWindow().getDecorView().setBackgroundColor(colourPrimary);
+                }
+                dialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(Color.WHITE);
+                dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(Color.WHITE);
             }
         };
-        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
+
+        new ItemTouchHelper(simpleItemTouchCallback).attachToRecyclerView(recyclerView);
+
     }
 
     public void newNote(View view) {

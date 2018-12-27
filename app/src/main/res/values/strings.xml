@@ -5,7 +5,7 @@
     <string name="background_colour">Background Colour</string>
     <string name="colour_indicator">Colour indicator</string>
     <string name="colour_navigation_bar">Colour Navigation Bar</string>
-    <string name="confirm_delete">Title</string>
+    <string name="confirm_delete">Confirm Deletion</string>
     <string name="confirm_delete_text">Are you sure you want to delete this note?</string>
     <string name="delete">Delete</string>
     <string name="empty_list_text">Press the button on the bottom right to add a new note!</string>

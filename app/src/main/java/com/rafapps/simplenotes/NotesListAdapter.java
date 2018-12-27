@@ -1,7 +1,5 @@
 package com.rafapps.simplenotes;
 
-import android.graphics.Color;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.util.DiffUtil;
@@ -21,15 +19,15 @@ import java.util.List;
 
 class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder> {
 
-    private List<File> fullList;
-    private List<File> filesList;
+    private List<File> fullList, filesList;
+    private int colourText, colourBackground;
 
-    NotesListAdapter() {
+    NotesListAdapter(int textColour, int backgroundColour) {
         filesList = new ArrayList<>();
         fullList = new ArrayList<>();
+        colourText = textColour;
+        colourBackground = backgroundColour;
     }
-
-    //TODO: Change "View v" to "View view", supply colours to view holder, add delete popup
 
     @Override
     public void onBindViewHolder(@NonNull NotesListAdapter.ViewHolder holder, int position) {
@@ -45,7 +43,7 @@ class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder>
     public NotesListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View inflatedView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item, parent, false);
-        return new ViewHolder(inflatedView);
+        return new ViewHolder(inflatedView, colourText, colourBackground);
     }
 
     @Override
@@ -65,6 +63,10 @@ class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder>
         filesList.remove(file);
         notifyItemRemoved(position);
         file.delete();
+    }
+
+    void cancelDelete(int position) {
+        notifyItemChanged(position);
     }
 
     void sortList(boolean sortAlphabetical) {
@@ -116,23 +118,23 @@ class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder>
         private final TextView noteDate;
         private final TextView noteTime;
         private String stringTitle;
-        public ConstraintLayout constraintLayout;
+        ConstraintLayout constraintLayout;
 
-        ViewHolder(View v) {
-            super(v);
-            noteTitle = v.findViewById(R.id.tv_title);
-            noteDate = v.findViewById(R.id.tv_date);
-            noteTime = v.findViewById(R.id.tv_time);
-            noteTitle.setTextColor(PreferenceManager.getDefaultSharedPreferences(itemView.getContext()).getInt(HelperUtils.PREFERENCE_COLOUR_FONT, Color.BLACK));
-            noteDate.setTextColor(PreferenceManager.getDefaultSharedPreferences(itemView.getContext()).getInt(HelperUtils.PREFERENCE_COLOUR_FONT, Color.BLACK));
-            noteTime.setTextColor(PreferenceManager.getDefaultSharedPreferences(itemView.getContext()).getInt(HelperUtils.PREFERENCE_COLOUR_FONT, Color.BLACK));
-            constraintLayout = v.findViewById(R.id.layout_constraint);
-            constraintLayout.setBackgroundColor(PreferenceManager.getDefaultSharedPreferences(itemView.getContext()).getInt(HelperUtils.PREFERENCE_COLOUR_BACKGROUND, Color.WHITE));
-            v.setOnClickListener(this);
+        ViewHolder(View view, int colourText, int colourBackground) {
+            super(view);
+            noteTitle = view.findViewById(R.id.tv_title);
+            noteDate = view.findViewById(R.id.tv_date);
+            noteTime = view.findViewById(R.id.tv_time);
+            noteTitle.setTextColor(colourText);
+            noteDate.setTextColor(colourText);
+            noteTime.setTextColor(colourText);
+            constraintLayout = view.findViewById(R.id.layout_constraint);
+            constraintLayout.setBackgroundColor(colourBackground);
+            view.setOnClickListener(this);
         }
 
         @Override
-        public void onClick(View v) {
+        public void onClick(View view) {
             itemView.getContext().startActivity(NoteActivity.getStartIntent(itemView.getContext(), stringTitle));
         }
 
