@@ -33,7 +33,7 @@ public class NotesDiffCallback extends DiffUtil.Callback {
 
     @Override
     public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-        return oldList.get(oldItemPosition).equals(newList.get(newItemPosition));
+        return oldList.get(oldItemPosition).lastModified() < (System.currentTimeMillis() - 5000);
     }
 
     @Nullable
