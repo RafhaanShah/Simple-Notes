@@ -22,11 +22,11 @@ class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder>
     private List<File> fullList, filesList;
     private int colourText, colourBackground;
 
-    NotesListAdapter(int textColour, int backgroundColour) {
+    NotesListAdapter(int colourText, int colourBackground) {
         filesList = new ArrayList<>();
         fullList = new ArrayList<>();
-        colourText = textColour;
-        colourBackground = backgroundColour;
+        this.colourText = colourText;
+        this.colourBackground = colourBackground;
     }
 
     @Override
@@ -41,8 +41,7 @@ class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder>
     @NonNull
     @Override
     public NotesListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View inflatedView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_item, parent, false);
+        View inflatedView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
         return new ViewHolder(inflatedView, colourText, colourBackground);
     }
 
@@ -54,28 +53,6 @@ class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder>
     void updateList(List<File> files, boolean sortAlphabetical) {
         filesList = files;
         sortList(sortAlphabetical);
-        fullList = new ArrayList<>(filesList);
-    }
-
-    void deleteFile(int position) {
-        File file = filesList.get(position);
-        fullList.remove(file);
-        filesList.remove(file);
-        notifyItemRemoved(position);
-        file.delete();
-    }
-
-    void cancelDelete(int position) {
-        notifyItemChanged(position);
-    }
-
-    void sortList(boolean sortAlphabetical) {
-        if (sortAlphabetical) {
-            sortAlphabetical(filesList);
-        } else {
-            sortDate(filesList);
-        }
-        DiffUtil.calculateDiff(new NotesDiffCallback(fullList, filesList)).dispatchUpdatesTo(this);
         fullList = new ArrayList<>(filesList);
     }
 
@@ -96,6 +73,16 @@ class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder>
         }
     }
 
+    void sortList(boolean sortAlphabetical) {
+        if (sortAlphabetical) {
+            sortAlphabetical(filesList);
+        } else {
+            sortDate(filesList);
+        }
+        DiffUtil.calculateDiff(new NotesDiffCallback(fullList, filesList)).dispatchUpdatesTo(this);
+        fullList = new ArrayList<>(filesList);
+    }
+
     private void sortAlphabetical(List<File> files) {
         Collections.sort(files, new Comparator<File>() {
             public int compare(File f1, File f2) {
@@ -112,11 +99,21 @@ class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder>
         });
     }
 
+    void deleteFile(int position) {
+        File file = filesList.get(position);
+        fullList.remove(file);
+        filesList.remove(file);
+        notifyItemRemoved(position);
+        file.delete();
+    }
+
+    void cancelDelete(int position) {
+        notifyItemChanged(position);
+    }
+
     static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        private final TextView noteTitle;
-        private final TextView noteDate;
-        private final TextView noteTime;
+        private final TextView noteTitle, noteDate, noteTime;
         private String stringTitle;
         ConstraintLayout constraintLayout;
 

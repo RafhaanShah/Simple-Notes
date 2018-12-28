@@ -26,19 +26,13 @@ import com.enrico.colorpicker.colorDialog;
 
 public class SettingsActivity extends AppCompatActivity implements colorDialog.ColorSelectedListener {
 
-    private ImageView imageAccent;
-    private ImageView imageFont;
-    private ImageView imageBackground;
-    private CheckBox navBox;
     private boolean colourNavbar;
+    private ImageView imageAccent, imageFont, imageBackground;
+    private CheckBox navBox;
     private SharedPreferences preferences;
 
     private @ColorInt
-    int colourPrimary;
-    private @ColorInt
-    int colourFont;
-    private @ColorInt
-    int colourBackground;
+    int colourPrimary, colourFont, colourBackground;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +52,44 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+
+    @Override
+    public void onColorSelection(DialogFragment dialogFragment, @ColorInt int selectedColor) {
+
+        int tag = Integer.valueOf(dialogFragment.getTag());
+
+        switch (tag) {
+            case 1:
+                imageAccent.setColorFilter(selectedColor);
+                if (Color.alpha(selectedColor) != 255) {
+                    Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.error_appbar_colour), Toast.LENGTH_LONG);
+                    TextView tv = toast.getView().findViewById(android.R.id.message);
+                    if (tv != null) {
+                        tv.setGravity(Gravity.CENTER);
+                    }
+                    toast.show();
+                }
+                colourPrimary = ColorUtils.setAlphaComponent(selectedColor, 255);
+                break;
+
+            case 2:
+                imageFont.setColorFilter(selectedColor);
+                colourFont = selectedColor;
+                break;
+
+            case 3:
+                imageBackground.setColorFilter(selectedColor);
+                colourBackground = selectedColor;
+                break;
+        }
+    }
+
+    private void getSettings(SharedPreferences preferences) {
+        colourPrimary = preferences.getInt(HelperUtils.PREFERENCE_COLOUR_PRIMARY, ContextCompat.getColor(SettingsActivity.this, R.color.colorPrimary));
+        colourFont = preferences.getInt(HelperUtils.PREFERENCE_COLOUR_FONT, Color.BLACK);
+        colourBackground = preferences.getInt(HelperUtils.PREFERENCE_COLOUR_BACKGROUND, Color.WHITE);
+        colourNavbar = preferences.getBoolean(HelperUtils.PREFERENCE_COLOUR_NAVBAR, false);
     }
 
     private void applySettings() {
@@ -92,17 +124,22 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
         ((LinearLayout) findViewById(R.id.settingsLayout)).getDividerDrawable().setColorFilter(colourPrimary, PorterDuff.Mode.SRC_ATOP);
         findViewById(R.id.btn_apply).getBackground().setColorFilter(colourPrimary, PorterDuff.Mode.SRC_ATOP);
 
-        // Set switch setting
+        // Set checkbox setting
         navBox = findViewById(R.id.checkbox_navigationbar);
         navBox.setChecked(colourNavbar);
         CompoundButtonCompat.setButtonTintList(navBox, ColorStateList.valueOf(colourPrimary));
     }
 
-    private void getSettings(SharedPreferences preferences) {
-        colourPrimary = preferences.getInt(HelperUtils.PREFERENCE_COLOUR_PRIMARY, ContextCompat.getColor(SettingsActivity.this, R.color.colorPrimary));
-        colourFont = preferences.getInt(HelperUtils.PREFERENCE_COLOUR_FONT, Color.BLACK);
-        colourBackground = preferences.getInt(HelperUtils.PREFERENCE_COLOUR_BACKGROUND, Color.WHITE);
-        colourNavbar = preferences.getBoolean(HelperUtils.PREFERENCE_COLOUR_NAVBAR, false);
+    public void saveSettings(View view) {
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt(HelperUtils.PREFERENCE_COLOUR_PRIMARY, colourPrimary);
+        editor.putInt(HelperUtils.PREFERENCE_COLOUR_FONT, colourFont);
+        editor.putInt(HelperUtils.PREFERENCE_COLOUR_BACKGROUND, colourBackground);
+        editor.putBoolean(HelperUtils.PREFERENCE_COLOUR_NAVBAR, navBox.isChecked());
+        editor.apply();
+
+        startActivity(new Intent(SettingsActivity.this, NotesListActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        finish();
     }
 
     public void showPicker1(View view) {
@@ -124,46 +161,4 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
         navBox.toggle();
     }
 
-    @Override
-    public void onColorSelection(DialogFragment dialogFragment, @ColorInt int selectedColor) {
-
-        int tag = Integer.valueOf(dialogFragment.getTag());
-
-        switch (tag) {
-            case 1:
-                imageAccent.setColorFilter(selectedColor);
-                if (Color.alpha(selectedColor) != 255) {
-                    Toast t = Toast.makeText(getApplicationContext(), getString(R.string.error_appbar_colour), Toast.LENGTH_LONG);
-                    TextView tv = t.getView().findViewById(android.R.id.message);
-                    if (tv != null) {
-                        tv.setGravity(Gravity.CENTER);
-                    }
-                    t.show();
-                }
-                colourPrimary = ColorUtils.setAlphaComponent(selectedColor, 255);
-                break;
-
-            case 2:
-                imageFont.setColorFilter(selectedColor);
-                colourFont = selectedColor;
-                break;
-
-            case 3:
-                imageBackground.setColorFilter(selectedColor);
-                colourBackground = selectedColor;
-                break;
-        }
-    }
-
-    public void saveSettings(View view) {
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt(HelperUtils.PREFERENCE_COLOUR_PRIMARY, colourPrimary);
-        editor.putInt(HelperUtils.PREFERENCE_COLOUR_FONT, colourFont);
-        editor.putInt(HelperUtils.PREFERENCE_COLOUR_BACKGROUND, colourBackground);
-        editor.putBoolean(HelperUtils.PREFERENCE_COLOUR_NAVBAR, navBox.isChecked());
-        editor.apply();
-
-        startActivity(new Intent(SettingsActivity.this, NotesListActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-        finish();
-    }
 }

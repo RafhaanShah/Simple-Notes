@@ -18,31 +18,18 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
-import android.widget.Toast;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 
 public class NoteActivity extends AppCompatActivity {
 
     private static final String EXTRA_NOTE_TITLE = "EXTRA_NOTE_TITLE";
 
-    private EditText noteText;
-    private EditText titleText;
-    private String title;
-    private String note;
-    private AlertDialog dialog;
     private boolean colourNavbar;
+    private String title, note;
+    private EditText noteText, titleText;
+    private AlertDialog dialog;
 
     private @ColorInt
-    int colourPrimary;
-    private @ColorInt
-    int colourFont;
-    private @ColorInt
-    int colourBackground;
+    int colourPrimary, colourFont, colourBackground;
 
     public static Intent getStartIntent(Context context, String title) {
         Intent intent = new Intent(context, NoteActivity.class);
@@ -69,7 +56,7 @@ public class NoteActivity extends AppCompatActivity {
                 note = sharedText;
                 title = "";
             }
-        } else { // If activity started from notes list
+        } else { // If activity started from the notes list
             title = intent.getStringExtra(EXTRA_NOTE_TITLE);
             if (title == null || TextUtils.isEmpty(title)) {
                 title = "";
@@ -79,7 +66,7 @@ public class NoteActivity extends AppCompatActivity {
                     getSupportActionBar().setTitle(getString(R.string.new_note));
             } else {
                 titleText.setText(title);
-                note = openFile(title);
+                note = HelperUtils.readFile(NoteActivity.this, title);
                 noteText.setText(note);
                 if (getSupportActionBar() != null)
                     getSupportActionBar().setTitle(title);
@@ -120,34 +107,6 @@ public class NoteActivity extends AppCompatActivity {
         return true;
     }
 
-    private void applySettings() {
-        HelperUtils.applyColours(NoteActivity.this, colourPrimary, colourNavbar);
-
-        // Set text field underline colour
-        noteText.setBackgroundTintList(ColorStateList.valueOf(colourPrimary));
-        titleText.setBackgroundTintList(ColorStateList.valueOf(colourPrimary));
-
-        // Set actionbar and background colour
-        findViewById(R.id.scroll_view).setBackgroundColor(colourBackground);
-        if (getSupportActionBar() != null)
-            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(colourPrimary));
-
-        // Set font colours
-        titleText.setTextColor(colourFont);
-        noteText.setTextColor(colourFont);
-
-        // Set hint colours
-        titleText.setHintTextColor(ColorUtils.setAlphaComponent(colourFont, 120));
-        noteText.setHintTextColor(ColorUtils.setAlphaComponent(colourFont, 120));
-    }
-
-    private void getSettings(SharedPreferences preferences) {
-        colourPrimary = preferences.getInt(HelperUtils.PREFERENCE_COLOUR_PRIMARY, ContextCompat.getColor(NoteActivity.this, R.color.colorPrimary));
-        colourFont = preferences.getInt(HelperUtils.PREFERENCE_COLOUR_FONT, Color.BLACK);
-        colourBackground = preferences.getInt(HelperUtils.PREFERENCE_COLOUR_BACKGROUND, Color.WHITE);
-        colourNavbar = preferences.getBoolean(HelperUtils.PREFERENCE_COLOUR_NAVBAR, false);
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_note, menu);
@@ -176,7 +135,7 @@ public class NoteActivity extends AppCompatActivity {
                         .setMessage(getString(R.string.confirm_delete_text))
                         .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                if (fileExists(title)) {
+                                if (HelperUtils.fileExists(NoteActivity.this, title)) {
                                     deleteFile(title + HelperUtils.TEXT_FILE_EXTENSION);
                                 }
                                 title = "";
@@ -203,6 +162,34 @@ public class NoteActivity extends AppCompatActivity {
         return (super.onOptionsItemSelected(item));
     }
 
+    private void getSettings(SharedPreferences preferences) {
+        colourPrimary = preferences.getInt(HelperUtils.PREFERENCE_COLOUR_PRIMARY, ContextCompat.getColor(NoteActivity.this, R.color.colorPrimary));
+        colourFont = preferences.getInt(HelperUtils.PREFERENCE_COLOUR_FONT, Color.BLACK);
+        colourBackground = preferences.getInt(HelperUtils.PREFERENCE_COLOUR_BACKGROUND, Color.WHITE);
+        colourNavbar = preferences.getBoolean(HelperUtils.PREFERENCE_COLOUR_NAVBAR, false);
+    }
+
+    private void applySettings() {
+        HelperUtils.applyColours(NoteActivity.this, colourPrimary, colourNavbar);
+
+        // Set text field underline colour
+        noteText.setBackgroundTintList(ColorStateList.valueOf(colourPrimary));
+        titleText.setBackgroundTintList(ColorStateList.valueOf(colourPrimary));
+
+        // Set actionbar and background colour
+        findViewById(R.id.scroll_view).setBackgroundColor(colourBackground);
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(colourPrimary));
+
+        // Set font colours
+        titleText.setTextColor(colourFont);
+        noteText.setTextColor(colourFont);
+
+        // Set hint colours
+        titleText.setHintTextColor(ColorUtils.setAlphaComponent(colourFont, 120));
+        noteText.setHintTextColor(ColorUtils.setAlphaComponent(colourFont, 120));
+    }
+
     private void saveFile() {
         // Get current title and note
         String newTitle = titleText.getText().toString().trim().replace("/", " ");
@@ -218,14 +205,14 @@ public class NoteActivity extends AppCompatActivity {
             return;
         }
 
-        // Get file name to be saved if the title has changed or it is empty
+        // Get file name to be saved if the title has changed or if it is empty
         if (!title.equals(newTitle) || TextUtils.isEmpty(newTitle)) {
             newTitle = newFileName(newTitle);
             titleText.setText(newTitle);
         }
 
         // Save the file with the new file name and content
-        writeFile(newTitle, newNote);
+        HelperUtils.writeFile(NoteActivity.this, newTitle, newNote);
 
         // If the title is not empty and the file name has changed then delete the old file
         if (!TextUtils.isEmpty(title) && !newTitle.equals(title)) {
@@ -243,10 +230,10 @@ public class NoteActivity extends AppCompatActivity {
             name = getString(R.string.note);
         }
         // If the name already exists, append a number to it
-        if (fileExists(name)) {
+        if (HelperUtils.fileExists(NoteActivity.this, name)) {
             int i = 1;
             while (true) {
-                if (!fileExists(name + " (" + i + ")") || title.equals(name + " (" + i + ")")) {
+                if (!HelperUtils.fileExists(NoteActivity.this, name + " (" + i + ")") || title.equals(name + " (" + i + ")")) {
                     name = (name + " (" + i + ")");
                     break;
                 }
@@ -256,41 +243,4 @@ public class NoteActivity extends AppCompatActivity {
         return name;
     }
 
-    private void writeFile(String fileName, String fileContent) {
-        try {
-            OutputStreamWriter out = new OutputStreamWriter(openFileOutput(fileName + HelperUtils.TEXT_FILE_EXTENSION, 0));
-            out.write(fileContent);
-            out.close();
-        } catch (Throwable t) {
-            Toast.makeText(NoteActivity.this, getString(R.string.exception) + t.toString(), Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private boolean fileExists(String fileName) {
-        File file = getBaseContext().getFileStreamPath(fileName + HelperUtils.TEXT_FILE_EXTENSION);
-        return file.exists();
-    }
-
-    private String openFile(String fileName) {
-        String content = "";
-        if (fileExists(fileName)) {
-            try {
-                InputStream in = openFileInput(fileName + HelperUtils.TEXT_FILE_EXTENSION);
-                if (in != null) {
-                    InputStreamReader tmp = new InputStreamReader(in);
-                    BufferedReader reader = new BufferedReader(tmp);
-                    String str;
-                    StringBuilder buf = new StringBuilder();
-                    while ((str = reader.readLine()) != null) {
-                        buf.append(str).append("\n");
-                    }
-                    in.close();
-                    content = buf.toString();
-                }
-            } catch (Exception e) {
-                Toast.makeText(NoteActivity.this, getString(R.string.exception) + e.toString(), Toast.LENGTH_LONG).show();
-            }
-        }
-        return content.trim();
-    }
 }

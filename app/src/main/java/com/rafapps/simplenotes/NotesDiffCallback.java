@@ -41,4 +41,5 @@ public class NotesDiffCallback extends DiffUtil.Callback {
     public Object getChangePayload(int oldItemPosition, int newItemPosition) {
         return super.getChangePayload(oldItemPosition, newItemPosition);
     }
+
 }

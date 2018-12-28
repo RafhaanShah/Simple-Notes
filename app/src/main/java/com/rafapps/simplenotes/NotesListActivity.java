@@ -34,19 +34,14 @@ import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.Arrays;
-
 public class NotesListActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     public static String PREFERENCE_SORT_ALPHABETICAL = "sortAlphabetical";
 
+    private boolean colourNavbar, sortAlphabetical;
     private TextView emptyText;
     private NotesListAdapter notesListAdapter;
     private FloatingActionButton fab;
-    private boolean colourNavbar, sortAlphabetical;
     private SharedPreferences preferences;
     private AlertDialog dialog;
 
@@ -118,20 +113,11 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
         }
 
         // Update the list
-        notesListAdapter.updateList(getFiles(), sortAlphabetical);
+        notesListAdapter.updateList(HelperUtils.getFiles(NotesListActivity.this), sortAlphabetical);
 
         showEmptyListMessage();
 
         findViewById(R.id.layout_coordinator).clearFocus();
-    }
-
-    // If the list is empty, show message
-    private void showEmptyListMessage() {
-        if (notesListAdapter.getItemCount() == 0) {
-            emptyText.setVisibility(View.VISIBLE);
-        } else if (emptyText.getVisibility() == View.VISIBLE) {
-            emptyText.setVisibility(View.GONE);
-        }
     }
 
     @Override
@@ -222,6 +208,14 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
         }
     }
 
+    private void showEmptyListMessage() {
+        if (notesListAdapter.getItemCount() == 0) {
+            emptyText.setVisibility(View.VISIBLE);
+        } else if (emptyText.getVisibility() == View.VISIBLE) {
+            emptyText.setVisibility(View.GONE);
+        }
+    }
+
     private void setItemTouchHelper(RecyclerView recyclerView) {
         ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
@@ -293,13 +287,4 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
         startActivity(NoteActivity.getStartIntent(NotesListActivity.this, ""));
     }
 
-    private ArrayList<File> getFiles() {
-        File[] files = getFilesDir().listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.toLowerCase().endsWith(HelperUtils.TEXT_FILE_EXTENSION);
-            }
-        });
-        return new ArrayList<>(Arrays.asList(files));
-    }
 }

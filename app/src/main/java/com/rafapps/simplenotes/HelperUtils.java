@@ -5,11 +5,18 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.support.v7.widget.LinearSmoothScroller;
-import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class HelperUtils {
 
@@ -46,19 +53,57 @@ public class HelperUtils {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(HelperUtils.darkenColor(colourPrimary, 0.2));
 
-        // Set task description, colour and icon for the app switcher
+        // Set task description, colour and icon for the app switcher (TaskDescription constructor deprecated in API 28)
         activity.setTaskDescription(new ActivityManager.TaskDescription(activity.getString(R.string.app_name),
                 BitmapFactory.decodeResource(activity.getResources(), R.drawable.ic_note), colourPrimary));
     }
 
-    public static void scrollToTop(Context context, RecyclerView recyclerView) {
-        LinearSmoothScroller linearSmoothScroller = new LinearSmoothScroller(context) {
+    public static ArrayList<File> getFiles(Context context) {
+        File[] files = context.getFilesDir().listFiles(new FilenameFilter() {
             @Override
-            protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
-                return 50f / displayMetrics.densityDpi;
+            public boolean accept(File dir, String name) {
+                return name.toLowerCase().endsWith(HelperUtils.TEXT_FILE_EXTENSION);
             }
-        };
-        linearSmoothScroller.setTargetPosition(0);
-        recyclerView.getLayoutManager().startSmoothScroll(linearSmoothScroller);
+        });
+        return new ArrayList<>(Arrays.asList(files));
     }
+
+    public static boolean fileExists(Context context, String fileName) {
+        File file = context.getFileStreamPath(fileName + HelperUtils.TEXT_FILE_EXTENSION);
+        return file.exists();
+    }
+
+    public static void writeFile(Context context, String fileName, String fileContent) {
+        try {
+            OutputStreamWriter out = new OutputStreamWriter(context.openFileOutput(fileName + HelperUtils.TEXT_FILE_EXTENSION, 0));
+            out.write(fileContent);
+            out.close();
+        } catch (Throwable t) {
+            Toast.makeText(context, context.getString(R.string.exception) + t.toString(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public static String readFile(Context context, String fileName) {
+        String content = "";
+        if (fileExists(context, fileName)) {
+            try {
+                InputStream in = context.openFileInput(fileName + HelperUtils.TEXT_FILE_EXTENSION);
+                if (in != null) {
+                    InputStreamReader tmp = new InputStreamReader(in);
+                    BufferedReader reader = new BufferedReader(tmp);
+                    String str;
+                    StringBuilder buf = new StringBuilder();
+                    while ((str = reader.readLine()) != null) {
+                        buf.append(str).append("\n");
+                    }
+                    in.close();
+                    content = buf.toString();
+                }
+            } catch (Exception e) {
+                Toast.makeText(context, context.getString(R.string.exception) + e.toString(), Toast.LENGTH_LONG).show();
+            }
+        }
+        return content.trim();
+    }
+
 }
