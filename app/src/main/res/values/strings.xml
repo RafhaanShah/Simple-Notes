@@ -9,7 +9,6 @@
     <string name="confirm_delete_text">Are you sure you want to delete this note?</string>
     <string name="delete">Delete</string>
     <string name="empty_list_text">Press the button on the bottom right to add a new note!</string>
-    <string name="error_appbar_colour">App bar colour cannot have any transparency</string>
     <string name="exception">Exception: </string>
     <string name="font_colour">Font Colour</string>
     <string name="new_note">New Note</string>

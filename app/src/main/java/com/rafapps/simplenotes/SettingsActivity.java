@@ -14,13 +14,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v4.widget.CompoundButtonCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.enrico.colorpicker.colorDialog;
 
@@ -56,31 +54,22 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
 
     @Override
     public void onColorSelection(DialogFragment dialogFragment, @ColorInt int selectedColor) {
-
         int tag = Integer.valueOf(dialogFragment.getTag());
 
         switch (tag) {
             case 1:
-                imageAccent.setColorFilter(selectedColor);
-                if (Color.alpha(selectedColor) != 255) {
-                    Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.error_appbar_colour), Toast.LENGTH_LONG);
-                    TextView tv = toast.getView().findViewById(android.R.id.message);
-                    if (tv != null) {
-                        tv.setGravity(Gravity.CENTER);
-                    }
-                    toast.show();
-                }
                 colourPrimary = ColorUtils.setAlphaComponent(selectedColor, 255);
+                imageAccent.setColorFilter(colourPrimary);
                 break;
 
             case 2:
-                imageFont.setColorFilter(selectedColor);
-                colourFont = selectedColor;
+                colourFont = ColorUtils.setAlphaComponent(selectedColor, 255);
+                imageFont.setColorFilter(colourFont);
                 break;
 
             case 3:
-                imageBackground.setColorFilter(selectedColor);
-                colourBackground = selectedColor;
+                colourBackground = ColorUtils.setAlphaComponent(selectedColor, 255);
+                imageBackground.setColorFilter(colourBackground);
                 break;
         }
     }

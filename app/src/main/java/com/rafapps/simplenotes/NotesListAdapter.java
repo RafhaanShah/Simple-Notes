@@ -142,4 +142,5 @@ class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.ViewHolder>
             noteTime.setText(time);
         }
     }
+
 }
