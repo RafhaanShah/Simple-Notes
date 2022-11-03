@@ -12,7 +12,8 @@
 
         <activity
             android:name=".NoteActivity"
-            android:parentActivityName=".NotesListActivity">
+            android:parentActivityName=".NotesListActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -22,7 +23,8 @@
 
         <activity
             android:name=".NotesListActivity"
-            android:theme="@style/SplashTheme">
+            android:theme="@style/SplashTheme"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
