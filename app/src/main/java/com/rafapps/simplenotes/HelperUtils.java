@@ -65,6 +65,7 @@ public class HelperUtils {
                 return name.toLowerCase().endsWith(HelperUtils.TEXT_FILE_EXTENSION);
             }
         });
+        if(files == null) return new ArrayList<>();
         return new ArrayList<>(Arrays.asList(files));
     }
 

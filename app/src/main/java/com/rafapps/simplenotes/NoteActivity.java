@@ -9,15 +9,16 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.annotation.ColorInt;
-import androidx.core.content.ContextCompat;
-import androidx.core.graphics.ColorUtils;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+
+import androidx.annotation.ColorInt;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
 
 public class NoteActivity extends AppCompatActivity {
 
@@ -115,50 +116,53 @@ public class NoteActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.btn_undo:
-                noteText.setText(note);
-                noteText.setSelection(noteText.getText().length());
-                return (true);
-
-            case R.id.btn_share:
-                Intent sendIntent = new Intent();
-                sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, noteText.getText().toString());
-                sendIntent.setType("text/plain");
-                startActivity(Intent.createChooser(sendIntent, getString(R.string.share_to)));
-                return (true);
-
-            case R.id.btn_delete:
-                dialog = new AlertDialog.Builder(NoteActivity.this, R.style.AlertDialogTheme)
-                        .setTitle(getString(R.string.confirm_delete))
-                        .setMessage(getString(R.string.confirm_delete_text))
-                        .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                if (HelperUtils.fileExists(NoteActivity.this, title)) {
-                                    deleteFile(title + HelperUtils.TEXT_FILE_EXTENSION);
-                                }
-                                title = "";
-                                note = "";
-                                titleText.setText(title);
-                                noteText.setText(note);
-                                finish();
-                            }
-                        })
-                        .setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-
-                            }
-                        })
-                        .setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_delete_white_24dp))
-                        .show();
-                if (dialog.getWindow() != null) {
-                    dialog.getWindow().getDecorView().setBackgroundColor(colourPrimary);
-                }
-                dialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(Color.WHITE);
-                dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(Color.WHITE);
-                return (true);
+        int id = item.getItemId();
+        if (id == R.id.btn_undo) {
+            noteText.setText(note);
+            noteText.setSelection(noteText.getText().length());
+            return (true);
         }
+
+        if (id == R.id.btn_share) {
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, noteText.getText().toString());
+            sendIntent.setType("text/plain");
+            startActivity(Intent.createChooser(sendIntent, getString(R.string.share_to)));
+            return (true);
+        }
+
+        if (id == R.id.btn_delete) {
+            dialog = new AlertDialog.Builder(NoteActivity.this, R.style.AlertDialogTheme)
+                    .setTitle(getString(R.string.confirm_delete))
+                    .setMessage(getString(R.string.confirm_delete_text))
+                    .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (HelperUtils.fileExists(NoteActivity.this, title)) {
+                                deleteFile(title + HelperUtils.TEXT_FILE_EXTENSION);
+                            }
+                            title = "";
+                            note = "";
+                            titleText.setText(title);
+                            noteText.setText(note);
+                            finish();
+                        }
+                    })
+                    .setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    })
+                    .setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_delete_white_24dp))
+                    .show();
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().getDecorView().setBackgroundColor(colourPrimary);
+            }
+            dialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(Color.WHITE);
+            dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(Color.WHITE);
+            return (true);
+        }
+
         return (super.onOptionsItemSelected(item));
     }
 

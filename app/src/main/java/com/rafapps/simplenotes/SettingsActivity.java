@@ -22,6 +22,8 @@ import android.widget.TextView;
 
 import com.enrico.colorpicker.colorDialog;
 
+import java.util.Objects;
+
 public class SettingsActivity extends AppCompatActivity implements colorDialog.ColorSelectedListener {
 
     private boolean colourNavbar;
@@ -54,7 +56,14 @@ public class SettingsActivity extends AppCompatActivity implements colorDialog.C
 
     @Override
     public void onColorSelection(DialogFragment dialogFragment, @ColorInt int selectedColor) {
-        int tag = Integer.valueOf(dialogFragment.getTag());
+        String fragmentTag = Objects.toString(dialogFragment.getTag(), "");
+        int tag;
+
+        try {
+            tag = Integer.parseInt(fragmentTag);
+        } catch (NumberFormatException e) {
+            return;
+        }
 
         switch (tag) {
             case 1:

@@ -14,18 +14,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SearchView;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,6 +21,21 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class NotesListActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
@@ -65,7 +68,7 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
         recyclerView.setLayoutManager(linearLayoutManager);
 
         DividerItemDecoration itemDecorator = new DividerItemDecoration(NotesListActivity.this, DividerItemDecoration.VERTICAL);
-        Drawable divider = getDrawable(R.drawable.divider);
+        Drawable divider = AppCompatResources.getDrawable(this, R.drawable.divider);
         if (divider != null) {
             divider.setTint(colourPrimary);
             itemDecorator.setDrawable(divider);
@@ -146,25 +149,30 @@ public class NotesListActivity extends AppCompatActivity implements SearchView.O
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.btn_settings:
-                startActivity(new Intent(NotesListActivity.this, SettingsActivity.class));
-                return (true);
-            case R.id.btn_sort:
-                if (sortAlphabetical) {
-                    item.setIcon(R.drawable.alphabetical_to_numerical);
-                    sortAlphabetical = false;
-                } else {
-                    item.setIcon(R.drawable.numeric_to_alphabetical);
-                    sortAlphabetical = true;
-                }
-                notesListAdapter.sortList(sortAlphabetical);
-                Drawable drawable = item.getIcon();
-                if (drawable instanceof Animatable)
-                    ((Animatable) drawable).start();
-            case R.id.btn_search:
-                return (true);
+        int id = item.getItemId();
+        if (id == R.id.btn_settings) {
+            startActivity(new Intent(NotesListActivity.this, SettingsActivity.class));
+            return (true);
         }
+
+        if (id == R.id.btn_sort) {
+            if (sortAlphabetical) {
+                item.setIcon(R.drawable.alphabetical_to_numerical);
+                sortAlphabetical = false;
+            } else {
+                item.setIcon(R.drawable.numeric_to_alphabetical);
+                sortAlphabetical = true;
+            }
+            notesListAdapter.sortList(sortAlphabetical);
+            Drawable drawable = item.getIcon();
+            if (drawable instanceof Animatable)
+                ((Animatable) drawable).start();
+        }
+
+        if (id == R.id.btn_search) {
+            return (true);
+        }
+
         return (super.onOptionsItemSelected(item));
     }
 
