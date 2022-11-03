@@ -12,3 +12,6 @@ This is a simple no-frills note taking app with material design, meant for takin
 </table>
 
 <a href='https://play.google.com/store/apps/details?id=com.rafapps.simplenotes'><img width=200 alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
