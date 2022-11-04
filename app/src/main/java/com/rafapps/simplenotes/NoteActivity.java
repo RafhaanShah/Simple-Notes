@@ -20,6 +20,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 
+import com.joaomgcd.taskerpluginlibrary.condition.TaskerPluginRunnerCondition;
+
 public class NoteActivity extends AppCompatActivity {
 
     private static final String EXTRA_NOTE_TITLE = "EXTRA_NOTE_TITLE";
@@ -226,6 +228,12 @@ public class NoteActivity extends AppCompatActivity {
         // Set the title to be the new saved title for when the home button is pressed
         title = newTitle;
 
+        // Send Tasker event
+        TaskerPluginRunnerCondition.Companion.requestQuery(
+                this,
+                TaskerEventNoteUpdateActivity.class,
+                new NoteOutput(newTitle, newNote)
+        );
     }
 
     private String newFileName(String name) {

@@ -22,4 +22,15 @@
     <string name="title">Title</string>
     <string name="yes">Yes</string>
     <string name="undo">Undo</string>
+    <string name="done">Done</string>
+    <string name="get_note">Get Note</string>
+    <string name="set_note">Set Note</string>
+    <string name="note_change">Note Changed</string>
+    <string name="note_title">Note Title</string>
+    <string name="note_title_description">The title of the note</string>
+    <string name="note_content">Note Content</string>
+    <string name="note_content_description">The contents of the note</string>
+    <string name="append">Append</string>
+    <string name="append_text">Append text instead of overwriting</string>
+    <string name="note_not_found">Note %1$s not found</string>
 </resources>

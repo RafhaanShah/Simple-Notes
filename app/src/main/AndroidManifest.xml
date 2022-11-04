@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.rafapps.simplenotes">
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -11,8 +13,8 @@
 
         <activity
             android:name=".NoteActivity"
-            android:parentActivityName=".NotesListActivity"
-            android:exported="true">
+            android:exported="true"
+            android:parentActivityName=".NotesListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -22,8 +24,8 @@
 
         <activity
             android:name=".NotesListActivity"
-            android:theme="@style/SplashTheme"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -33,5 +35,38 @@
         <activity
             android:name=".SettingsActivity"
             android:parentActivityName=".NotesListActivity" />
+
+        <activity
+            android:name=".TaskerActionGetNoteActivity"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/get_note"
+            android:theme="@style/TaskerInputTheme">
+            <intent-filter>
+                <action android:name="com.twofortyfouram.locale.intent.action.EDIT_SETTING" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".TaskerActionSetNoteActivity"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/set_note"
+            android:theme="@style/TaskerInputTheme">
+            <intent-filter>
+                <action android:name="com.twofortyfouram.locale.intent.action.EDIT_SETTING" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".TaskerEventNoteUpdateActivity"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/note_change"
+            android:theme="@style/TaskerInputTheme">
+            <intent-filter>
+                <action android:name="net.dinglisch.android.tasker.ACTION_EDIT_EVENT" />
+            </intent-filter>
+        </activity>
     </application>
 </manifest>
