@@ -7,10 +7,10 @@
 
 <table>
   <tr>
-    <td><img src='https://github.com/RafhaanShah/Simple-Notes/blob/master/assets/screenshot1.png'></td>
-    <td><img src='https://github.com/RafhaanShah/Simple-Notes/blob/master/assets/screenshot2.png'></td>
-    <td><img src='https://github.com/RafhaanShah/Simple-Notes/blob/master/assets/screenshot3.png'></td>
-    <td><img src='https://github.com/RafhaanShah/Simple-Notes/blob/master/assets/screenshot4.png'></td>
+    <td><img src='https://github.com/RafhaanShah/Simple-Notes/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png'></td>
+    <td><img src='https://github.com/RafhaanShah/Simple-Notes/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png'></td>
+    <td><img src='https://github.com/RafhaanShah/Simple-Notes/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png'></td>
+    <td><img src='https://github.com/RafhaanShah/Simple-Notes/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png'></td>
   </tr>
 </table>
 

@@ -1,0 +1,18 @@
+- Updated for Android 13
+- Added Tasker integration
+
+------
+- Updated for Android Pie
+- New UI design
+- Swipe to delete
+- Sorting options
+- Bug fixes
+
+------
+- Updated for Android Oreo
+- Fixed a bug with deleting some notes after changing the title
+- Replaced the new note button with a floating button
+- Fixed a bug with changing the app colour to certain colours
+
+------
+Initial app release
