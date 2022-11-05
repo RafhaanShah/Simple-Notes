@@ -1,0 +1,13 @@
+# This workflow will validate fastlane structures
+# https://github.com/ashutoshgngwr/validate-fastlane-supply-metadata
+name: Validate Fastlane
+
+on: workflow_dispatch
+
+jobs:
+  validate_fastlane:
+    name: Validate Fastlane
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ashutoshgngwr/validate-fastlane-supply-metadata@v2
