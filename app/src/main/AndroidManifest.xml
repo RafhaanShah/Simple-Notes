@@ -24,6 +24,7 @@
 
         <activity
             android:name=".NotesListActivity"
+            android:label="@string/launcher_title"
             android:exported="true"
             android:theme="@style/SplashTheme">
             <intent-filter>

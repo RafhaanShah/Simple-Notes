@@ -1,6 +1,7 @@
 <resources>
     <string name="accent_colour">Accent Colour</string>
-    <string name="app_name">Simple Notes</string>
+    <string name="app_name">Simple Material Notes</string>
+    <string name="launcher_title">Simple Notes</string>
     <string name="apply_changes">Apply Changes</string>
     <string name="background_colour">Background Colour</string>
     <string name="colour_indicator">Colour indicator</string>
